@@ -14,6 +14,7 @@ import (
 	listall_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/listall"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/samber/lo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
@@ -62,7 +63,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer logger.Sync()
+	defer lo.Must0(logger.Sync())
 	sugar := logger.Sugar()
 	sugar.Info("started")
 
@@ -87,7 +88,7 @@ func main() {
 		"listall": listallHandler,
 	}
 
-	handler := bot.NewBot(botApi, handlersMap)
+	handler := bot.NewBot(botApi, sugar, handlersMap)
 
 	// Handle incoming updates
 	for update := range updates {
