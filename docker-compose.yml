@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13-alpine
+    container_name: task_tracker_db
+    environment:
+      POSTGRES_USER: youruser
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: task_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  migrate:
+    image: migrate/migrate
+    container_name: task_tracker_migrate
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: youruser
+      DB_PASSWORD: yourpassword
+      DB_NAME: task_tracker
+      DB_PORT: 5432
+    volumes:
+      - ./migrations:/migrations
+    command: ["-path", "/migrations", "-database", "postgres://youruser:yourpassword@db:5432/task_tracker?sslmode=disable", "up"]
+
+  app:
+    build: .
+    container_name: task_tracker_app
+    depends_on:
+      - db
+      - migrate
+    environment:
+      DB_HOST: db
+      DB_USER: youruser
+      DB_PASSWORD: yourpassword
+      DB_NAME: task_tracker
+      DB_PORT: 5432
+      TELEGRAM_BOT_TOKEN: ${TGBOTAPI}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/var/log/task-tracker
+
+volumes:
+  postgres_data:
