@@ -2,6 +2,8 @@ package bot
 
 import (
 	"fmt"
+	"github.com/gwassel/TasksOfWoe/internal/infra"
+	"github.com/pkg/errors"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -9,6 +11,7 @@ import (
 
 type Bot struct {
 	API         *tgbotapi.BotAPI
+	logger      infra.Logger
 	handlersMap map[string]interface {
 		Handle(message *tgbotapi.Message)
 	}
@@ -16,10 +19,11 @@ type Bot struct {
 
 func NewBot(
 	api *tgbotapi.BotAPI,
+	logger infra.Logger,
 	handlersMap map[string]interface {
 		Handle(message *tgbotapi.Message)
 	}) *Bot {
-	return &Bot{API: api, handlersMap: handlersMap}
+	return &Bot{API: api, logger: logger, handlersMap: handlersMap}
 }
 
 func (b *Bot) HandleMessage(message *tgbotapi.Message) {
@@ -50,5 +54,8 @@ func (b *Bot) HandleMessage(message *tgbotapi.Message) {
 
 func (b *Bot) SendMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
-	b.API.Send(msg)
+	_, err := b.API.Send(msg)
+	if err != nil {
+		b.logger.Error(errors.Wrap(err, "unable to send message"))
+	}
 }
