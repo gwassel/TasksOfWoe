@@ -1,6 +1,6 @@
 # Variables
 PROJECT_NAME=tasky
-DOCKER_COMPOSE=docker-compose -f docker-compose.yml -f docker-compose-logs.yml
+DOCKER_COMPOSE=docker-compose -f docker-compose.yml
 
 # Default target
 all: build
@@ -13,7 +13,14 @@ build:
 # Start the application
 up:
 	@echo "Starting the application..."
+	$(DOCKER_COMPOSE) up
+
+
+# Start the application
+upd:
+	@echo "Starting the application..."
 	$(DOCKER_COMPOSE) up -d
+
 
 # Stop the application
 down:
