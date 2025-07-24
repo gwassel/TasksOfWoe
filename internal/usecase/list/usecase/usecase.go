@@ -2,9 +2,10 @@ package usecase
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
-	"strings"
 )
 
 type Usecase struct {
