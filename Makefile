@@ -13,13 +13,13 @@ build:
 # Start the application
 up:
 	@echo "Starting the application..."
-	$(DOCKER_COMPOSE) up
+	$(DOCKER_COMPOSE) up --build
 
 
 # Start the application
 upd:
 	@echo "Starting the application..."
-	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) up -d --build
 
 
 # Stop the application
