@@ -18,6 +18,9 @@ func (u *Usecase) Handle(userID int64) string {
 	if err != nil {
 		return "Failed to listall tasks"
 	}
+	if len(tasks) == 0 {
+		return "You have no tasks"
+	}
 	var taskList strings.Builder
 	for _, task := range tasks {
 		status := "Incomplete"

@@ -1,6 +1,7 @@
 package complete
 
 import (
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
@@ -30,16 +31,33 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	text := message.Text
 	userID := message.From.ID
 
-	taskID := strings.TrimSpace(strings.TrimPrefix(text, "com"))
+	taskID := strings.TrimSpace(strings.TrimPrefix(text, "complete"))
+	taskID = strings.TrimSpace(strings.TrimPrefix(taskID, "com"))
 	if taskID == "" {
 		h.sendMessage(message.Chat.ID, "Please provide a task ID.")
 		return
 	}
-	taskIDInt, err := strconv.ParseInt(taskID, 10, 64)
+	h.logger.Debug(fmt.Sprintf("taskID: %s", taskID))
+
+	//taskIDInt, err := strconv.ParseInt(taskID, 10, 64)
+	taskIDs, err := h.convertInput(taskID)
 	if err != nil {
 		h.sendMessage(message.Chat.ID, "TaskID is not int")
 		return
 	}
-	resp := h.usecase.Handle(userID, taskIDInt)
+	resp := h.usecase.Handle(userID, taskIDs)
 	h.sendMessage(message.Chat.ID, resp)
+}
+
+func (h *Handler) convertInput(strIDs string) ([]int64, error) {
+	result := make([]int64, 0)
+	for _, k := range strings.Split(strIDs, " ") {
+		tmp, err := strconv.ParseInt(k, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, tmp)
+	}
+
+	return result, nil
 }

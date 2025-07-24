@@ -68,9 +68,9 @@ func main() {
 	sugar.Info("started")
 
 	// usecase
-	completeUsecase := complete_usecase.NewUsecase(db)
+	completeUsecase := complete_usecase.NewUsecase(sugar, db)
 	addUsecase := add_usecase.NewUsecase(db)
-	listUsecase := list_usecase.NewUsecase(db)
+	listUsecase := list_usecase.NewUsecase(sugar, db)
 	listallUsecase := listall_usecase.NewUsecase(db)
 
 	// handler
