@@ -27,7 +27,7 @@ func (u *Usecase) Handle(userID int64) string {
 		if task.Completed {
 			status = "Completed"
 		}
-		if strings.Count(task.Task, "\n") > 0 {
+		if strings.Contains(task.Task, "\n") {
 			taskList.WriteString(fmt.Sprintf("%d. \"%s\" [%s]\n", task.ID, task.Task, status))
 		} else {
 			taskList.WriteString(fmt.Sprintf("%d. %s [%s]\n", task.ID, task.Task, status))
