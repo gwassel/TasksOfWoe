@@ -46,7 +46,11 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		if task.Completed {
 			status = "Completed"
 		}
-		taskList.WriteString(fmt.Sprintf("%d. %s [%s]\n", task.ID, task.Task, status))
+		if strings.Contains(task.Task, "\n") {
+			taskList.WriteString(fmt.Sprintf("%d. \"%s\" [%s]\n", task.ID, task.Task, status))
+		} else {
+			taskList.WriteString(fmt.Sprintf("%d. %s [%s]\n", task.ID, task.Task, status))
+		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())
 }
