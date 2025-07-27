@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"github.com/gwassel/TasksOfWoe/internal/infra"
-	"github.com/pkg/errors"
 )
 
 type Usecase struct {
@@ -14,17 +13,16 @@ func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
 	return &Usecase{logger: logger, taskRepo: taskRepo}
 }
 
-func (u *Usecase) Handle(userID int64, userTaskIDs []int64) string {
+func (u *Usecase) Handle(userID int64, userTaskIDs []int64) error {
 	for _, taskID := range userTaskIDs {
 		// TODO add transaction
 		err := u.handleOne(userID, taskID)
 		if err != nil {
-			u.logger.Error(errors.Wrap(err, "unable to complete task"))
-			return "Failed to complete task."
+			return err
 		}
 	}
 
-	return "Task marked as completed!"
+	return nil
 }
 
 func (u *Usecase) handleOne(userID, userTaskID int64) error {

@@ -1,8 +1,13 @@
 package repository
 
 import (
+	"context"
+	"fmt"
+
+	sq "github.com/Masterminds/squirrel"
 	"github.com/gwassel/TasksOfWoe/internal/domain"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 )
 
 type repository struct {
@@ -14,7 +19,27 @@ func New(db *sqlx.DB) *repository {
 }
 
 func (r *repository) ListAllTasks(userID int64) ([]domain.Task, error) {
+	op := "list all tasks"
+
+	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
+		Select(
+			"*",
+		).
+		From("tasks").
+		Where(sq.And{sq.Eq{"user_id": userID}}).
+		OrderBy("is_in_work DESC", "completed_at NULLS FIRST", "user_task_id ASC")
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to build query '%s'", query)
+	}
+	query = fmt.Sprintf("-- %s\n%s", op, query)
+
 	var tasks []domain.Task
-	err := r.db.Select(&tasks, "SELECT * FROM tasks WHERE user_id = $1 ORDER BY is_in_work DESC, completed_at NULLS FIRST, id ASC", userID)
-	return tasks, err
+	err = r.db.SelectContext(context.TODO(), &tasks, query, args...)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to exec query '%s'", query)
+	}
+
+	return tasks, nil
 }
