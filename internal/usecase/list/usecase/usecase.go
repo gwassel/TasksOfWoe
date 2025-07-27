@@ -27,13 +27,19 @@ func (u *Usecase) Handle(userID int64) string {
 	}
 
 	var taskList strings.Builder
+	var separatorflag = true
+
 	for _, task := range tasks {
-		// TODO: group output by status
-		taskList.WriteString(fmt.Sprintf("%d", task.UserTaskID))
 		if task.InWork {
-			taskList.WriteString("*")
+			taskList.WriteString(fmt.Sprintf("%d*. ", task.UserTaskID))
+		} else {
+			if separatorflag {
+				separatorflag = false
+				taskList.WriteString("\n")
+			}
+			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
 		}
-		taskList.WriteString(". ")
+
 		if strings.Contains(task.Task, "\n") {
 			taskList.WriteString(fmt.Sprintf("\"%s\"\n", task.Task))
 		} else {
