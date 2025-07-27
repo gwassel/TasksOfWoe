@@ -28,10 +28,15 @@ func (u *Usecase) Handle(userID int64) string {
 
 	var taskList strings.Builder
 	for _, task := range tasks {
+		taskList.WriteString(fmt.Sprintf("%d", task.UserTaskID))
+		if task.InWork {
+			taskList.WriteString("*")
+		}
+		taskList.WriteString(". ")
 		if strings.Contains(task.Task, "\n") {
-			taskList.WriteString(fmt.Sprintf("%d. \"%s\"\n", task.UserTaskID, task.Task))
+			taskList.WriteString(fmt.Sprintf("\"%s\"\n", task.Task))
 		} else {
-			taskList.WriteString(fmt.Sprintf("%d. %s\n", task.UserTaskID, task.Task))
+			taskList.WriteString(fmt.Sprintf("%s\n", task.Task))
 		}
 	}
 	return taskList.String()
