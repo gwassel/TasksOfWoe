@@ -28,6 +28,7 @@ func (u *Usecase) Handle(userID int64) string {
 
 	var taskList strings.Builder
 	for _, task := range tasks {
+		// TODO: group output by status
 		taskList.WriteString(fmt.Sprintf("%d", task.UserTaskID))
 		if task.InWork {
 			taskList.WriteString("*")
