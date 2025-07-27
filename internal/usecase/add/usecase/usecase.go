@@ -10,10 +10,10 @@ func New(taskRepo TaskRepo) *Usecase {
 	return &Usecase{taskRepo: taskRepo}
 }
 
-func (u *Usecase) Handle(userID int64, task string) (string, error) {
+func (u *Usecase) Handle(userID int64, task string) error {
 	err := u.taskRepo.AddTask(userID, task)
 	if err != nil {
-		return "", errors.Wrap(err, "failed to add task")
+		return errors.Wrap(err, "failed to add task")
 	}
-	return "Task added.", nil
+	return nil
 }

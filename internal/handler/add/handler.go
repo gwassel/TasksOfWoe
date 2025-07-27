@@ -35,11 +35,11 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		h.sendMessage(message.Chat.ID, "Please provide a task description.")
 		return
 	}
-	resp, err := h.usecase.Handle(userID, task)
+	err := h.usecase.Handle(userID, task)
 	if err != nil {
 		h.logger.Error(err)
 		h.sendMessage(message.Chat.ID, "Failed to add task.")
 		return
 	}
-	h.sendMessage(message.Chat.ID, resp)
+	h.sendMessage(message.Chat.ID, "Task added.")
 }
