@@ -15,6 +15,6 @@ func New(db *sqlx.DB) *repository {
 
 func (r *repository) ListTasks(userID int64) ([]domain.Task, error) {
 	var tasks []domain.Task
-	err := r.db.Select(&tasks, "SELECT * FROM tasks WHERE user_id = $1 AND completed=FALSE ORDER BY user_task_id ASC", userID)
+	err := r.db.Select(&tasks, "SELECT * FROM tasks WHERE user_id = $1 AND completed=FALSE ORDER BY is_in_work DESC, user_task_id ASC", userID)
 	return tasks, err
 }
