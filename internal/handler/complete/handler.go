@@ -2,11 +2,12 @@ package complete
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
-	"strconv"
-	"strings"
 )
 
 type Handler struct {
@@ -45,8 +46,13 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		h.sendMessage(message.Chat.ID, "TaskID is not int")
 		return
 	}
-	resp := h.usecase.Handle(userID, taskIDs)
-	h.sendMessage(message.Chat.ID, resp)
+	err = h.usecase.Handle(userID, taskIDs)
+	if err != nil {
+		h.logger.Error(err)
+		h.sendMessage(message.Chat.ID, "Unable to complete task(s).")
+		return
+	}
+	h.sendMessage(message.Chat.ID, "Task(s) marked as complete.")
 }
 
 func (h *Handler) convertInput(strIDs string) ([]int64, error) {
