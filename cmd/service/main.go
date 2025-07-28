@@ -8,7 +8,8 @@ import (
 	complete_handler "github.com/gwassel/TasksOfWoe/internal/handler/complete"
 	list_handler "github.com/gwassel/TasksOfWoe/internal/handler/list"
 	listall_handler "github.com/gwassel/TasksOfWoe/internal/handler/listall"
-	toggleinwork_handler "github.com/gwassel/TasksOfWoe/internal/handler/toggleinwork"
+	take_handler "github.com/gwassel/TasksOfWoe/internal/handler/take"
+	untake_handler "github.com/gwassel/TasksOfWoe/internal/handler/untake"
 	add_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/add"
 	complete_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/complete"
 	list_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/list"
@@ -81,7 +82,8 @@ func main() {
 	addHandler := add_handler.New(sugar, botApi, addUsecase)
 	listHandler := list_handler.New(sugar, botApi, listUsecase)
 	listallHandler := listall_handler.New(sugar, botApi, listallUsecase)
-	toggleinworkHandler := toggleinwork_handler.New(sugar, botApi, toggleinworkUsecase)
+	takeHandler := take_handler.New(sugar, botApi, toggleinworkUsecase)
+	untakeHandler := untake_handler.New(sugar, botApi, toggleinworkUsecase)
 
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)
@@ -90,7 +92,8 @@ func main() {
 		"add":     addHandler,
 		"list":    listHandler,
 		"listall": listallHandler,
-		"tog":     toggleinworkHandler,
+		"take":    takeHandler,
+		"untake":  untakeHandler,
 	}
 
 	handler := bot.NewBot(botApi, sugar, handlersMap)
