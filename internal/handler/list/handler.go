@@ -42,11 +42,23 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	}
 
 	var taskList strings.Builder
+	var separatorflag = true
+
 	for _, task := range tasks {
-		if strings.Contains(task.Task, "\n") {
-			taskList.WriteString(fmt.Sprintf("%d. \"%s\"\n", task.UserTaskID, task.Task))
+		if task.InWork {
+			taskList.WriteString(fmt.Sprintf("%d*. ", task.UserTaskID))
 		} else {
-			taskList.WriteString(fmt.Sprintf("%d. %s\n", task.UserTaskID, task.Task))
+			if separatorflag {
+				separatorflag = false
+				taskList.WriteString("\n")
+			}
+			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
+		}
+
+		if strings.Contains(task.Task, "\n") {
+			taskList.WriteString(fmt.Sprintf("\"%s\"\n", task.Task))
+		} else {
+			taskList.WriteString(fmt.Sprintf("%s\n", task.Task))
 		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())

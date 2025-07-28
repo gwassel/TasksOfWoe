@@ -27,7 +27,7 @@ func (r *repository) ListTasks(userID int64) ([]domain.Task, error) {
 		).
 		From("tasks").
 		Where(sq.And{sq.Eq{"user_id": userID}, sq.Eq{"completed": false}}).
-		OrderBy("user_task_id ASC")
+		OrderBy("is_in_work DESC", "user_task_id ASC")
 
 	query, args, err := builder.ToSql()
 	if err != nil {
