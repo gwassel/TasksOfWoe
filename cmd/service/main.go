@@ -75,15 +75,16 @@ func main() {
 	addUsecase := add_usecase.NewUsecase(db)
 	listUsecase := list_usecase.NewUsecase(sugar, db)
 	listallUsecase := listall_usecase.NewUsecase(db)
-	toggleinworkUsecase := toggleinwork_usecase.NewUsecase(sugar, db)
+	takeUsecase := toggleinwork_usecase.NewUsecase(sugar, db, true)
+	untakeUsecase := toggleinwork_usecase.NewUsecase(sugar, db, false)
 
 	// handler
 	completeHandler := complete_handler.New(sugar, botApi, completeUsecase)
 	addHandler := add_handler.New(sugar, botApi, addUsecase)
 	listHandler := list_handler.New(sugar, botApi, listUsecase)
 	listallHandler := listall_handler.New(sugar, botApi, listallUsecase)
-	takeHandler := take_handler.New(sugar, botApi, toggleinworkUsecase)
-	untakeHandler := untake_handler.New(sugar, botApi, toggleinworkUsecase)
+	takeHandler := take_handler.New(sugar, botApi, takeUsecase)
+	untakeHandler := untake_handler.New(sugar, botApi, untakeUsecase)
 
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)

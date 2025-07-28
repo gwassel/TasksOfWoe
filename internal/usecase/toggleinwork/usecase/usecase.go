@@ -7,16 +7,17 @@ import (
 type Usecase struct {
 	logger   infra.Logger
 	taskRepo TaskRepo
+	value    bool
 }
 
-func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
-	return &Usecase{logger: logger, taskRepo: taskRepo}
+func New(logger infra.Logger, taskRepo TaskRepo, value bool) *Usecase {
+	return &Usecase{logger: logger, taskRepo: taskRepo, value: value}
 }
 
-func (u *Usecase) Handle(userID int64, userTaskIDs []int64, value bool) error {
+func (u *Usecase) Handle(userID int64, userTaskIDs []int64) error {
 	for _, taskID := range userTaskIDs {
 		// TODO add transaction
-		err := u.handleOne(userID, taskID, value)
+		err := u.handleOne(userID, taskID)
 		if err != nil {
 			return err
 		}
@@ -25,8 +26,8 @@ func (u *Usecase) Handle(userID int64, userTaskIDs []int64, value bool) error {
 	return nil
 }
 
-func (u *Usecase) handleOne(userID, userTaskID int64, value bool) error {
-	err := u.taskRepo.ToggleInWork(userID, userTaskID, value)
+func (u *Usecase) handleOne(userID, userTaskID int64) error {
+	err := u.taskRepo.ToggleInWork(userID, userTaskID, u.value)
 	if err != nil {
 		return err
 	}

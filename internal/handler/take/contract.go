@@ -7,5 +7,5 @@ type BotApi interface {
 }
 
 type Usecase interface {
-	Handle(userID int64, taskIDs []int64, value bool) error
+	Handle(userID int64, taskIDs []int64) error
 }

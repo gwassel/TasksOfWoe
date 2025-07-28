@@ -7,8 +7,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func NewUsecase(logger infra.Logger, db *sqlx.DB) *usecase.Usecase {
+func NewUsecase(logger infra.Logger, db *sqlx.DB, value bool) *usecase.Usecase {
 	taskRepo := repository.New(db)
 
-	return usecase.New(logger, taskRepo)
+	return usecase.New(logger, taskRepo, value)
 }
