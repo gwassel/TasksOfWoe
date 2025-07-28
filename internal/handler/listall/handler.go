@@ -48,7 +48,6 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	)
 
 	for _, task := range tasks {
-		// TEST: проверить корректность числа пустых строк
 		status := "Incomplete"
 		if task.Completed {
 			status = "Completed"

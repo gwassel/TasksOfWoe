@@ -40,7 +40,6 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	}
 	h.logger.Debug(fmt.Sprintf("taskID: %s", taskID))
 
-	//taskIDInt, err := strconv.ParseInt(taskID, 10, 64)
 	taskIDs, err := h.convertInput(taskID)
 	if err != nil {
 		h.sendMessage(message.Chat.ID, "TaskID is not int")
