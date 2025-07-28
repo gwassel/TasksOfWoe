@@ -24,7 +24,6 @@ func (r *repository) CompleteTask(userID int64, userTaskID int64) error {
 		Update("tasks").
 		Set("completed", true).
 		Set("completed_at", sq.Expr("NOW()")).
-		Set("is_in_work", false).
 		Where(sq.And{sq.Eq{"user_task_id": userTaskID}, sq.Eq{"user_id": userID}, sq.Eq{"completed": false}})
 
 	query, args, err := builder.ToSql()
