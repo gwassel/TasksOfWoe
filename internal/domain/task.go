@@ -8,4 +8,5 @@ type Task struct {
 	CreatedAt   string  `db:"created_at"`
 	Completed   bool    `db:"completed"`
 	CompletedAt *string `db:"completed_at"`
+	InWork      bool    `db:"is_in_work"`
 }

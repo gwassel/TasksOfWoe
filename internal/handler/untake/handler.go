@@ -32,8 +32,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	text := message.Text
 	userID := message.From.ID
 
-	taskID := strings.TrimSpace(strings.TrimPrefix(text, "complete"))
-	taskID = strings.TrimSpace(strings.TrimPrefix(taskID, "com"))
+	taskID := strings.TrimSpace(strings.TrimPrefix(text, "untake"))
 	if taskID == "" {
 		h.sendMessage(message.Chat.ID, "Please provide a task ID.")
 		return
@@ -48,10 +47,10 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	err = h.usecase.Handle(userID, taskIDs)
 	if err != nil {
 		h.logger.Error(err)
-		h.sendMessage(message.Chat.ID, "Unable to complete task(s).")
+		h.sendMessage(message.Chat.ID, "Unable to update task status.")
 		return
 	}
-	h.sendMessage(message.Chat.ID, "Task(s) marked as complete.")
+	h.sendMessage(message.Chat.ID, "Suspended work on task(s).")
 }
 
 func (h *Handler) convertInput(strIDs string) ([]int64, error) {
