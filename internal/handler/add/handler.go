@@ -1,6 +1,7 @@
 package add
 
 import (
+	"fmt"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -35,11 +36,11 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		h.sendMessage(message.Chat.ID, "Please provide a task description.")
 		return
 	}
-	err := h.usecase.Handle(userID, task)
+	usertaskID, err := h.usecase.Handle(userID, task)
 	if err != nil {
 		h.logger.Error(err)
 		h.sendMessage(message.Chat.ID, "Failed to add task.")
 		return
 	}
-	h.sendMessage(message.Chat.ID, "Task added.")
+	h.sendMessage(message.Chat.ID, fmt.Sprintf("Task %d added.", usertaskID))
 }
