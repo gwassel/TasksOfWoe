@@ -11,9 +11,9 @@ func New(taskRepo TaskRepo) *Usecase {
 }
 
 func (u *Usecase) Handle(userID int64, task string) (int64, error) {
-	usertaskID, err := u.taskRepo.AddTask(userID, task)
+	userTaskID, err := u.taskRepo.AddTask(userID, task)
 	if err != nil {
 		return 0, errors.Wrap(err, "failed to add task")
 	}
-	return usertaskID, nil
+	return userTaskID, nil
 }

@@ -38,13 +38,13 @@ func (r *repository) AddTask(userID int64, task string) (int64, error) {
 	}
 	defer result.Close()
 
-	var usertaskID int64
+	var userTaskID int64
 	for result.Next() {
-		err = result.Scan(&usertaskID)
+		err = result.Scan(&userTaskID)
 		if err != nil {
 			return 0, errors.Wrapf(err, "failed to retrieve task ID")
 		}
 	}
 
-	return usertaskID, nil
+	return userTaskID, nil
 }
