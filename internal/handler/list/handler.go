@@ -3,6 +3,8 @@ package complete
 import (
 	"fmt"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
@@ -28,6 +30,9 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 }
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
+	const maxlen int = 50
+	const mincutlen int = 30
+
 	userID := message.From.ID
 
 	tasks, err := h.usecase.Handle(userID)
@@ -55,6 +60,11 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
 		}
 
+		if utf8.RuneCountInString(task.Task) > maxlen {
+			task.Task = cutText(task.Task, mincutlen, maxlen)
+			// TODO: добавить кликабельность
+		}
+
 		if strings.Contains(task.Task, "\n") {
 			taskList.WriteString(fmt.Sprintf("\"%s\"\n", task.Task))
 		} else {
@@ -62,4 +72,21 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())
+}
+
+func cutText(s string, minlen, maxlen int) string {
+	if utf8.RuneCountInString(s) > maxlen {
+		// Unicode compatibility
+		s = string([]rune(s)[0:maxlen])
+		cutpos := strings.LastIndexFunc(s, unicode.IsSpace)
+		if cutpos != -1 {
+			t := s[0:cutpos]
+			if len([]rune(t)) >= minlen {
+				s = t
+			}
+		}
+		s += " ..."
+	}
+
+	return s
 }
