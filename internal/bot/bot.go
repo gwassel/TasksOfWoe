@@ -53,6 +53,9 @@ func (b *Bot) HandleMessage(message *tgbotapi.Message) {
 	case strings.HasPrefix(text, "untake"):
 		b.handlersMap["untake"].Handle(message)
 
+	case strings.HasPrefix(text, "desc"):
+		b.handlersMap["desc"].Handle(message)
+
 	default:
 		b.SendMessage(message.Chat.ID, "Unknown command. Use /add, /list, or /complete.")
 	}
