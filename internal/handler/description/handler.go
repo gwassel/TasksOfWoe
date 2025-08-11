@@ -56,20 +56,20 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	}
 
 	for _, task := range tasks {
-		var desc strings.Builder
+		var taskDesc strings.Builder
 
 		status := task.Status()
 
-		desc.WriteString(fmt.Sprintf("%d. %s\n\n", task.UserTaskID, task.Task))
-		desc.WriteString(fmt.Sprintf("Created %s\n", task.CreatedAt))
+		taskDesc.WriteString(fmt.Sprintf("%d. %s\n\n", task.UserTaskID, task.Task))
+		taskDesc.WriteString(fmt.Sprintf("Created %s\n", task.CreatedAt))
 		switch status {
 		case domain.Incomplete, domain.Working:
-			desc.WriteString(fmt.Sprintf("%s", domain.ToString(status)))
+			taskDesc.WriteString(fmt.Sprintf("%s", domain.ToString(status)))
 
 		case domain.Completed:
-			desc.WriteString(fmt.Sprintf("%s %s", domain.ToString(status), *task.CompletedAt))
+			taskDesc.WriteString(fmt.Sprintf("%s %s", domain.ToString(status), *task.CompletedAt))
 		}
-		h.sendMessage(message.Chat.ID, desc.String())
+		h.sendMessage(message.Chat.ID, taskDesc.String())
 	}
 
 }
