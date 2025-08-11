@@ -3,6 +3,8 @@ package complete
 import (
 	"fmt"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
@@ -25,6 +27,18 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 	if err != nil {
 		h.logger.Error(errors.Wrap(err, "unable to send message"))
 	}
+}
+
+const maxlen int = 32
+
+func cutText(s string, len int) string {
+	if utf8.RuneCountInString(s) <= len {
+		return s
+	}
+	for utf8.RuneCountInString(s) > len {
+		s = s[0:strings.LastIndexFunc(s, unicode.IsSpace)]
+	}
+	return s + " ..."
 }
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
@@ -54,6 +68,8 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			}
 			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
 		}
+
+		task.Task = cutText(task.Task, maxlen)
 
 		if strings.Contains(task.Task, "\n") {
 			taskList.WriteString(fmt.Sprintf("\"%s\"\n", task.Task))
