@@ -60,10 +60,11 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		}
 
 		if utf8.RuneCountInString(task.Task) > maxlen {
-			for utf8.RuneCountInString(task.Task) > maxlen {
-				task.Task = task.Task[0:strings.LastIndexFunc(task.Task, unicode.IsSpace)]
-			}
+			// Unicode compatibility
+			task.Task = string([]rune(task.Task)[0:maxlen])
+			task.Task = task.Task[0:strings.LastIndexFunc(task.Task, unicode.IsSpace)]
 			task.Task += " ..."
+			// NOTE: здесь же можно будет потом кликабельность добавить
 		}
 
 		if strings.Contains(task.Task, "\n") {
