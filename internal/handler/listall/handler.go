@@ -31,6 +31,7 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
 	const maxlen int = 40
+	const mincutlen int = 20
 
 	userID := message.From.ID
 

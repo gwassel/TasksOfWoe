@@ -31,6 +31,7 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
 	const maxlen int = 50
+	const mincutlen int = 30
 
 	userID := message.From.ID
 
@@ -60,10 +61,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		}
 
 		if utf8.RuneCountInString(task.Task) > maxlen {
-			// Unicode compatibility
-			task.Task = string([]rune(task.Task)[0:maxlen])
-			task.Task = task.Task[0:strings.LastIndexFunc(task.Task, unicode.IsSpace)]
-			task.Task += " ..."
+			task.Task = cutText(task.Task, mincutlen, maxlen)
 			// NOTE: здесь же можно будет потом кликабельность добавить
 		}
 
