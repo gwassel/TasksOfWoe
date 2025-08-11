@@ -10,3 +10,34 @@ type Task struct {
 	CompletedAt *string `db:"completed_at"`
 	InWork      bool    `db:"is_in_work"`
 }
+
+type taskStatus int
+
+const (
+	Incomplete taskStatus = iota
+	Working
+	Completed
+)
+
+func (t *Task) Status() taskStatus {
+	status := Incomplete
+	if t.Completed {
+		status = Completed
+	} else if t.InWork {
+		status = Working
+	}
+
+	return status
+}
+
+func ToString(status taskStatus) string {
+	switch status {
+	case Incomplete:
+		return "Incomplete"
+	case Working:
+		return "Working"
+	case Completed:
+		return "Completed"
+	}
+	return ""
+}

@@ -7,6 +7,7 @@ import (
 	"unicode/utf8"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
 )
@@ -53,25 +54,19 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	)
 
 	for _, task := range tasks {
-		status := "Incomplete"
-		if task.Completed {
-			status = "Completed"
-		} else if task.InWork {
-			status = "Working"
-		}
-
+		status := task.Status()
 		switch status {
-		case "Working":
+		case domain.Working:
 			taskList.WriteString(fmt.Sprintf("%d*. ", task.ID))
 
-		case "Incomplete":
+		case domain.Incomplete:
 			if separatorflag1 {
 				separatorflag1 = false
 				taskList.WriteString("\n")
 			}
 			taskList.WriteString(fmt.Sprintf("%d. ", task.ID))
 
-		case "Completed":
+		case domain.Completed:
 			if separatorflag2 {
 				separatorflag2 = false
 				taskList.WriteString("\n")
@@ -85,9 +80,9 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		}
 
 		if strings.Contains(task.Task, "\n") {
-			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Task, status))
+			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Task, domain.ToString(status)))
 		} else {
-			taskList.WriteString(fmt.Sprintf("%s [%s]\n", task.Task, status))
+			taskList.WriteString(fmt.Sprintf("%s [%s]\n", task.Task, domain.ToString(status)))
 		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())

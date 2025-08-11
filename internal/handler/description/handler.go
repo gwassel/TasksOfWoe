@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
 )
@@ -57,21 +58,16 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	for _, task := range tasks {
 		var desc strings.Builder
 
-		status := "Incomplete"
-		if task.Completed {
-			status = "Completed"
-		} else if task.InWork {
-			status = "Working"
-		}
+		status := task.Status()
 
 		desc.WriteString(fmt.Sprintf("%d. %s\n\n", task.UserTaskID, task.Task))
 		desc.WriteString(fmt.Sprintf("Created %s\n", task.CreatedAt))
 		switch status {
-		case "Incomplete", "Working":
-			desc.WriteString(fmt.Sprintf("%s", status))
+		case domain.Incomplete, domain.Working:
+			desc.WriteString(fmt.Sprintf("%s", domain.ToString(status)))
 
-		case "Completed":
-			desc.WriteString(fmt.Sprintf("%s %s", status, *task.CompletedAt))
+		case domain.Completed:
+			desc.WriteString(fmt.Sprintf("%s %s", domain.ToString(status), *task.CompletedAt))
 		}
 		h.sendMessage(message.Chat.ID, desc.String())
 	}
