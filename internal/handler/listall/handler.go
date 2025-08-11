@@ -29,19 +29,9 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 	}
 }
 
-const maxlen int = 50
-
-func cutText(s string, len int) string {
-	if utf8.RuneCountInString(s) <= len {
-		return s
-	}
-	for utf8.RuneCountInString(s) > len {
-		s = s[0:strings.LastIndexFunc(s, unicode.IsSpace)]
-	}
-	return s + " ..."
-}
-
 func (h *Handler) Handle(message *tgbotapi.Message) {
+	const maxlen int = 50
+
 	userID := message.From.ID
 
 	tasks, err := h.usecase.Handle(userID)
@@ -88,7 +78,12 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			taskList.WriteString(fmt.Sprintf("%d. ", task.ID))
 		}
 
-		task.Task = cutText(task.Task, maxlen)
+		if utf8.RuneCountInString(task.Task) > maxlen {
+			for utf8.RuneCountInString(task.Task) > maxlen {
+				task.Task = task.Task[0:strings.LastIndexFunc(task.Task, unicode.IsSpace)]
+			}
+			task.Task += " ..."
+		}
 
 		if strings.Contains(task.Task, "\n") {
 			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Task, status))
