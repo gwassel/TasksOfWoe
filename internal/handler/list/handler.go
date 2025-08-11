@@ -75,3 +75,20 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())
 }
+
+func cutText(s string, minlen, maxlen int) string {
+	if utf8.RuneCountInString(s) > maxlen {
+		// Unicode compatibility
+		s = string([]rune(s)[0:maxlen])
+		cutpos := strings.LastIndexFunc(s, unicode.IsSpace)
+		if cutpos != -1 {
+			t := s[0:cutpos]
+			if len([]rune(t)) >= minlen {
+				s = t
+			}
+		}
+		s += " ..."
+	}
+
+	return s
+}
