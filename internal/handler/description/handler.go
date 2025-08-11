@@ -64,7 +64,15 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			status = "Working"
 		}
 
-		desc.WriteString(fmt.Sprintf("%d. %s [%s]", task.UserTaskID, task.Task, status))
+		desc.WriteString(fmt.Sprintf("%d. %s\n\n", task.UserTaskID, task.Task))
+		desc.WriteString(fmt.Sprintf("Created %s\n", task.CreatedAt))
+		switch status {
+		case "Incomplete", "Working":
+			desc.WriteString(fmt.Sprintf("%s", status))
+
+		case "Completed":
+			desc.WriteString(fmt.Sprintf("%s %s", status, *task.CompletedAt))
+		}
 		h.sendMessage(message.Chat.ID, desc.String())
 	}
 
