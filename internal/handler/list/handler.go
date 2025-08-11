@@ -29,7 +29,7 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 	}
 }
 
-const maxlen int = 32
+const maxlen int = 50
 
 func cutText(s string, len int) string {
 	if utf8.RuneCountInString(s) <= len {
