@@ -26,3 +26,18 @@ jobs:
         uses: golangci/golangci-lint-action@v8
         with:
           version: v2.1
+
+  test:
+    runs-on: ubuntu-latest
+    needs: golangci
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+
+      - name: Run tests
+        run: go test ./...
