@@ -18,7 +18,7 @@ func New(db *sqlx.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) TaskDescription(userID int64, userTaskID int64) ([]domain.Task, error) {
+func (r *repository) TaskDescription(userID int64, userTaskIDs []int64) ([]domain.Task, error) {
 	op := "print task description"
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
@@ -26,7 +26,8 @@ func (r *repository) TaskDescription(userID int64, userTaskID int64) ([]domain.T
 			"*",
 		).
 		From("tasks").
-		Where(sq.And{sq.Eq{"user_id": userID}, sq.Eq{"user_task_id": userTaskID}})
+		Where(sq.And{sq.Eq{"user_id": userID}, sq.Eq{"user_task_id": userTaskIDs}}).
+		OrderBy("completed_at NULLS FIRST", "is_in_work DESC", "user_task_id ASC")
 
 	query, args, err := builder.ToSql()
 	if err != nil {
