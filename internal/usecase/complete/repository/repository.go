@@ -37,5 +37,4 @@ func (r *repository) CompleteTask(userID int64, userTaskID int64) error {
 		return errors.Wrapf(err, "failed to exec query '%s'", query)
 	}
 	return err
-
 }
