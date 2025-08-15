@@ -32,9 +32,6 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 }
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
-	const maxlen int = 50
-	const mincutlen int = 30
-
 	userID := message.From.ID
 
 	tasks, err := h.usecase.Handle(userID)

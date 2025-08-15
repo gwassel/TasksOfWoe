@@ -64,7 +64,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		taskDesc.WriteString(fmt.Sprintf("Created %s\n", task.CreatedAt))
 		switch status {
 		case domain.Incomplete, domain.Working:
-			taskDesc.WriteString(fmt.Sprintf("%s", domain.ToString(status)))
+			taskDesc.WriteString(domain.ToString(status))
 
 		case domain.Completed:
 			taskDesc.WriteString(fmt.Sprintf("%s %s", domain.ToString(status), *task.CompletedAt))
