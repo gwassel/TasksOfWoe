@@ -36,7 +36,7 @@ func (r *repository) AddTask(userID int64, task string) (int64, error) {
 	if err != nil {
 		return 0, errors.Wrapf(err, "failed to exec query '%s'", query)
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 
 	var userTaskID int64
 	for result.Next() {

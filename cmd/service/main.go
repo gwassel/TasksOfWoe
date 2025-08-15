@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/gwassel/TasksOfWoe/internal/bot"
 	add_handler "github.com/gwassel/TasksOfWoe/internal/handler/add"
@@ -22,8 +25,6 @@ import (
 	"github.com/samber/lo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"log"
-	"os"
 )
 
 func main() {
@@ -56,7 +57,7 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	config := zap.NewProductionConfig()
 	config.OutputPaths = []string{"/var/log/task-tracker/app.log"}

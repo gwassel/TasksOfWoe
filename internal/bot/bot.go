@@ -2,11 +2,11 @@ package bot
 
 import (
 	"fmt"
-	"github.com/gwassel/TasksOfWoe/internal/infra"
-	"github.com/pkg/errors"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/infra"
+	"github.com/pkg/errors"
 )
 
 type Bot struct {
@@ -22,7 +22,8 @@ func NewBot(
 	logger infra.Logger,
 	handlersMap map[string]interface {
 		Handle(message *tgbotapi.Message)
-	}) *Bot {
+	},
+) *Bot {
 	return &Bot{API: api, logger: logger, handlersMap: handlersMap}
 }
 
