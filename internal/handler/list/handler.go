@@ -47,7 +47,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	}
 
 	var taskList strings.Builder
-	var separatorflag = true
+	separatorflag := true
 
 	for _, task := range tasks {
 		if task.InWork {

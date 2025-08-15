@@ -1,5 +1,5 @@
 package usecase
 
 type TaskRepo interface {
-	CompleteTask(userID int64, taskID int64) error
+	CompleteTask(userID int64, taskIDs []int64) error
 }

@@ -17,14 +17,14 @@ func New(db *sqlx.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) CompleteTask(userID int64, userTaskID int64) error {
+func (r *repository) CompleteTask(userID int64, userTaskIDs []int64) error {
 	op := "complete task"
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
 		Update("tasks").
 		Set("completed", true).
 		Set("completed_at", sq.Expr("NOW()")).
-		Where(sq.And{sq.Eq{"user_task_id": userTaskID}, sq.Eq{"user_id": userID}, sq.Eq{"completed": false}})
+		Where(sq.And{sq.Eq{"user_id": userID}, sq.Eq{"user_task_id": userTaskIDs}, sq.Eq{"completed": false}})
 
 	query, args, err := builder.ToSql()
 	if err != nil {
@@ -37,5 +37,4 @@ func (r *repository) CompleteTask(userID int64, userTaskID int64) error {
 		return errors.Wrapf(err, "failed to exec query '%s'", query)
 	}
 	return err
-
 }

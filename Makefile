@@ -40,8 +40,19 @@ log:
 	@echo "Viewing logs for $(service)..."
 	$(DOCKER_COMPOSE) logs -f $(service)
 
+
+# Run lint
+lint:
+	@echo "Running lint..."
+	golangci-lint run ./...
+
+# Run formatters
+fmt:
+	@echo "Formatting..."
+	golangci-lint fmt ./... -v
+
 # Run tests
-test:
+test: lint
 	@echo "Running tests..."
 	go test ./...
 
