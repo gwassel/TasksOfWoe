@@ -9,12 +9,14 @@ import (
 	"github.com/gwassel/TasksOfWoe/internal/bot"
 	add_handler "github.com/gwassel/TasksOfWoe/internal/handler/add"
 	complete_handler "github.com/gwassel/TasksOfWoe/internal/handler/complete"
+	description_handler "github.com/gwassel/TasksOfWoe/internal/handler/description"
 	list_handler "github.com/gwassel/TasksOfWoe/internal/handler/list"
 	listall_handler "github.com/gwassel/TasksOfWoe/internal/handler/listall"
 	take_handler "github.com/gwassel/TasksOfWoe/internal/handler/take"
 	untake_handler "github.com/gwassel/TasksOfWoe/internal/handler/untake"
 	add_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/add"
 	complete_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/complete"
+	description_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/description"
 	list_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/list"
 	listall_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/listall"
 	toggleinwork_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/toggleinwork"
@@ -78,6 +80,7 @@ func main() {
 	listallUsecase := listall_usecase.NewUsecase(db)
 	takeUsecase := toggleinwork_usecase.NewUsecase(sugar, db, true)
 	untakeUsecase := toggleinwork_usecase.NewUsecase(sugar, db, false)
+	descriptionUsecase := description_usecase.NewUsecase(sugar, db)
 
 	// handler
 	completeHandler := complete_handler.New(sugar, botApi, completeUsecase)
@@ -86,6 +89,7 @@ func main() {
 	listallHandler := listall_handler.New(sugar, botApi, listallUsecase)
 	takeHandler := take_handler.New(sugar, botApi, takeUsecase)
 	untakeHandler := untake_handler.New(sugar, botApi, untakeUsecase)
+	descriptionHandler := description_handler.New(sugar, botApi, descriptionUsecase)
 
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)
@@ -96,6 +100,7 @@ func main() {
 		"listall": listallHandler,
 		"take":    takeHandler,
 		"untake":  untakeHandler,
+		"desc":    descriptionHandler,
 	}
 
 	handler := bot.NewBot(botApi, sugar, handlersMap)

@@ -7,18 +7,21 @@ import (
 	"unicode/utf8"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
 )
 
 type Handler struct {
-	logger  infra.Logger
-	api     BotApi
-	usecase Usecase
+	logger    infra.Logger
+	api       BotApi
+	usecase   Usecase
+	maxlen    int
+	mincutlen int
 }
 
 func New(logger infra.Logger, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
-	return &Handler{logger: logger, api: api, usecase: usecase}
+	return &Handler{logger: logger, api: api, usecase: usecase, maxlen: 40, mincutlen: 20}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {
@@ -30,9 +33,6 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 }
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
-	const maxlen int = 40
-	const mincutlen int = 20
-
 	userID := message.From.ID
 
 	tasks, err := h.usecase.Handle(userID)
@@ -53,25 +53,19 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	)
 
 	for _, task := range tasks {
-		status := "Incomplete"
-		if task.Completed {
-			status = "Completed"
-		} else if task.InWork {
-			status = "Working"
-		}
-
+		status := task.Status()
 		switch status {
-		case "Working":
+		case domain.Working:
 			taskList.WriteString(fmt.Sprintf("%d*. ", task.ID))
 
-		case "Incomplete":
+		case domain.Incomplete:
 			if separatorflag1 {
 				separatorflag1 = false
 				taskList.WriteString("\n")
 			}
 			taskList.WriteString(fmt.Sprintf("%d. ", task.ID))
 
-		case "Completed":
+		case domain.Completed:
 			if separatorflag2 {
 				separatorflag2 = false
 				taskList.WriteString("\n")
@@ -79,28 +73,28 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			taskList.WriteString(fmt.Sprintf("%d. ", task.ID))
 		}
 
-		if utf8.RuneCountInString(task.Task) > maxlen {
-			task.Task = cutText(task.Task, mincutlen, maxlen)
-			// NOTE: здесь же можно будет потом кликабельность добавить
+		if utf8.RuneCountInString(task.Task) > h.maxlen {
+			task.Task = h.cutText(task.Task)
+			// TODO: добавить кликабельность (#41)
 		}
 
 		if strings.Contains(task.Task, "\n") {
-			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Task, status))
+			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Task, status.ToString()))
 		} else {
-			taskList.WriteString(fmt.Sprintf("%s [%s]\n", task.Task, status))
+			taskList.WriteString(fmt.Sprintf("%s [%s]\n", task.Task, status.ToString()))
 		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())
 }
 
-func cutText(s string, minlen, maxlen int) string {
-	if utf8.RuneCountInString(s) > maxlen {
+func (h *Handler) cutText(s string) string {
+	if utf8.RuneCountInString(s) > h.maxlen {
 		// Unicode compatibility
-		s = string([]rune(s)[0:maxlen])
+		s = string([]rune(s)[0:h.maxlen])
 		cutpos := strings.LastIndexFunc(s, unicode.IsSpace)
 		if cutpos != -1 {
 			t := s[0:cutpos]
-			if len([]rune(t)) >= minlen {
+			if len([]rune(t)) >= h.mincutlen {
 				s = t
 			}
 		}
