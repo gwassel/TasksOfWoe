@@ -1,5 +1,5 @@
 package usecase
 
 type TaskRepo interface {
-	ToggleInWork(userID int64, taskID int64, value bool) error
+	ToggleInWork(userID int64, taskIDs []int64, value bool) error
 }
