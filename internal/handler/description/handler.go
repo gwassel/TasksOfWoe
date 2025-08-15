@@ -60,14 +60,29 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 
 		status := task.Status()
 
-		taskDesc.WriteString(fmt.Sprintf("%d. %s\n\n", task.UserTaskID, task.Task))
-		taskDesc.WriteString(fmt.Sprintf("Created %s\n", task.CreatedAt))
+		taskDesc.WriteString(fmt.Sprintf("%d", task.UserTaskID))
+		if status == domain.Working {
+			taskDesc.WriteString("*")
+		}
+
+		taskDesc.WriteString(fmt.Sprintf(". %s\n\n", task.Task))
+		createdAt, err := task.FormatDate(task.CreatedAt)
+		if err != nil {
+			h.logger.Error(err)
+			h.sendMessage(message.Chat.ID, "Unable to get creation date.")
+		}
+		taskDesc.WriteString(fmt.Sprintf("Created %s\n", createdAt))
 		switch status {
 		case domain.Incomplete, domain.Working:
 			taskDesc.WriteString(domain.ToString(status))
 
 		case domain.Completed:
-			taskDesc.WriteString(fmt.Sprintf("%s %s", domain.ToString(status), *task.CompletedAt))
+			completedAt, err := task.FormatDate(*task.CompletedAt)
+			if err != nil {
+				h.logger.Error(err)
+				h.sendMessage(message.Chat.ID, "Unable to get completion date.")
+			}
+			taskDesc.WriteString(fmt.Sprintf("%s %s", domain.ToString(status), completedAt))
 		}
 		h.sendMessage(message.Chat.ID, taskDesc.String())
 	}

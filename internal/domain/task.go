@@ -1,5 +1,10 @@
 package domain
 
+import (
+	"time"
+	_ "time/tzdata"
+)
+
 type Task struct {
 	ID          int64   `db:"id"`
 	UserTaskID  int64   `db:"user_task_id"`
@@ -28,6 +33,20 @@ func (t *Task) Status() taskStatus {
 	}
 
 	return status
+}
+
+// Converts given date in RFC3339Nano format to DateTime format Moscow time
+func (t *Task) FormatDate(date string) (string, error) {
+	Moscow, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		return "", err
+	}
+	tm, err := time.Parse(time.RFC3339Nano, date)
+	if err != nil {
+		return "", err
+	}
+
+	return tm.In(Moscow).Format(time.DateTime) + " (Moscow)", nil
 }
 
 func ToString(status taskStatus) string {
