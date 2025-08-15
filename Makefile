@@ -100,6 +100,8 @@ help:
 	@echo "  make restart      - Restart the application"
 	@echo "  make logs         - View logs for all services"
 	@echo "  make log service=<service> - View logs for a specific service"
+	@echo "  make lint         - Run lint"
+	@echo "  make fmt          - Format go source code"
 	@echo "  make test         - Run tests"
 	@echo "  make clean        - Clean up Docker resources"
 	@echo "  make clean-images - Remove all Docker images"
