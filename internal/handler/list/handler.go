@@ -12,13 +12,15 @@ import (
 )
 
 type Handler struct {
-	logger  infra.Logger
-	api     BotApi
-	usecase Usecase
+	logger    infra.Logger
+	api       BotApi
+	usecase   Usecase
+	maxlen    int
+	mincutlen int
 }
 
 func New(logger infra.Logger, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
-	return &Handler{logger: logger, api: api, usecase: usecase}
+	return &Handler{logger: logger, api: api, usecase: usecase, maxlen: 50, mincutlen: 30}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {
@@ -30,9 +32,6 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 }
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
-	const maxlen int = 50
-	const mincutlen int = 30
-
 	userID := message.From.ID
 
 	tasks, err := h.usecase.Handle(userID)
@@ -60,9 +59,9 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
 		}
 
-		if utf8.RuneCountInString(task.Task) > maxlen {
-			task.Task = cutText(task.Task, mincutlen, maxlen)
-			// NOTE: здесь же можно будет потом кликабельность добавить
+		if utf8.RuneCountInString(task.Task) > h.maxlen {
+			task.Task = h.cutText(task.Task)
+			// TODO: добавить кликабельность (#41)
 		}
 
 		if strings.Contains(task.Task, "\n") {
@@ -74,14 +73,14 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	h.sendMessage(message.Chat.ID, taskList.String())
 }
 
-func cutText(s string, minlen, maxlen int) string {
-	if utf8.RuneCountInString(s) > maxlen {
+func (h *Handler) cutText(s string) string {
+	if utf8.RuneCountInString(s) > h.maxlen {
 		// Unicode compatibility
-		s = string([]rune(s)[0:maxlen])
+		s = string([]rune(s)[0:h.maxlen])
 		cutpos := strings.LastIndexFunc(s, unicode.IsSpace)
 		if cutpos != -1 {
 			t := s[0:cutpos]
-			if len([]rune(t)) >= minlen {
+			if len([]rune(t)) >= h.mincutlen {
 				s = t
 			}
 		}
