@@ -75,7 +75,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 
 		if utf8.RuneCountInString(task.Task) > h.maxlen {
 			task.Task = h.cutText(task.Task)
-			// TODO:добавить кликабельность
+			// TODO: добавить кликабельность (#41)
 		}
 
 		if strings.Contains(task.Task, "\n") {
