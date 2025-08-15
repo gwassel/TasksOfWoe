@@ -71,7 +71,6 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		}
 		h.sendMessage(message.Chat.ID, taskDesc.String())
 	}
-
 }
 
 func (h *Handler) convertInput(strIDs string) ([]int64, error) {
