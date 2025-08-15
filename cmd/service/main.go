@@ -55,7 +55,7 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	defer lo.Must0(db.Close())
+	defer func() { _ = db.Close() }()
 
 	config := zap.NewProductionConfig()
 	config.OutputPaths = []string{"/var/log/task-tracker/app.log"}
