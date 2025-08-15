@@ -79,9 +79,9 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		}
 
 		if strings.Contains(task.Task, "\n") {
-			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Task, domain.ToString(status)))
+			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Task, status.ToString()))
 		} else {
-			taskList.WriteString(fmt.Sprintf("%s [%s]\n", task.Task, domain.ToString(status)))
+			taskList.WriteString(fmt.Sprintf("%s [%s]\n", task.Task, status.ToString()))
 		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())

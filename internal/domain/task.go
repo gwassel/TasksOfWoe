@@ -36,7 +36,7 @@ func (t *Task) Status() taskStatus {
 }
 
 // Converts given date in RFC3339Nano format to DateTime format Moscow time
-func (t *Task) FormatDate(date string) (string, error) {
+func FormatDateForTask(date string) (string, error) {
 	Moscow, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
 		return "", err
@@ -49,7 +49,7 @@ func (t *Task) FormatDate(date string) (string, error) {
 	return tm.In(Moscow).Format(time.DateTime) + " (Moscow)", nil
 }
 
-func ToString(status taskStatus) string {
+func (status taskStatus) ToString() string {
 	switch status {
 	case Incomplete:
 		return "Incomplete"
