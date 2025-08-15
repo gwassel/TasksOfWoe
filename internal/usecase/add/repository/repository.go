@@ -7,6 +7,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 )
 
 type repository struct {
@@ -36,7 +37,7 @@ func (r *repository) AddTask(userID int64, task string) (int64, error) {
 	if err != nil {
 		return 0, errors.Wrapf(err, "failed to exec query '%s'", query)
 	}
-	defer result.Close()
+	defer lo.Must0(result.Close())
 
 	var userTaskID int64
 	for result.Next() {
