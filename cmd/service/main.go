@@ -19,7 +19,8 @@ import (
 	description_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/description"
 	list_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/list"
 	listall_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/listall"
-	toggleinwork_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/toggleinwork"
+	take_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/take"
+	untake_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/untake"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/samber/lo"
@@ -78,8 +79,8 @@ func main() {
 	addUsecase := add_usecase.NewUsecase(db)
 	listUsecase := list_usecase.NewUsecase(sugar, db)
 	listallUsecase := listall_usecase.NewUsecase(db)
-	takeUsecase := toggleinwork_usecase.NewUsecase(sugar, db, true)
-	untakeUsecase := toggleinwork_usecase.NewUsecase(sugar, db, false)
+	takeUsecase := take_usecase.NewUsecase(sugar, db)
+	untakeUsecase := untake_usecase.NewUsecase(sugar, db)
 	descriptionUsecase := description_usecase.NewUsecase(sugar, db)
 
 	// handler

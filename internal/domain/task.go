@@ -14,6 +14,7 @@ type Task struct {
 	Completed   bool    `db:"completed"`
 	CompletedAt *string `db:"completed_at"`
 	InWork      bool    `db:"is_in_work"`
+	TakenAt     *string `db:"taken_at"`
 }
 
 type taskStatus int
