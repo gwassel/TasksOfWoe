@@ -17,13 +17,14 @@ func New(db *sqlx.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) ToggleInWork(userID int64, userTaskIDs []int64, value bool) error {
-	op := "update inWork"
+func (r *repository) TakeTask(userID int64, userTaskIDs []int64) error {
+	op := "Take Task"
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
 		Update("tasks").
-		Set("is_in_work", value).
-		Where(sq.And{sq.Eq{"user_id": userID}, sq.Eq{"user_task_id": userTaskIDs}, sq.Eq{"completed": false}, sq.Eq{"is_in_work": !value}})
+		Set("is_in_work", true).
+		Set("taken_at", sq.Expr("NOW()")).
+		Where(sq.And{sq.Eq{"user_id": userID}, sq.Eq{"user_task_id": userTaskIDs}, sq.Eq{"completed": false}, sq.Eq{"is_in_work": false}})
 
 	query, args, err := builder.ToSql()
 	if err != nil {

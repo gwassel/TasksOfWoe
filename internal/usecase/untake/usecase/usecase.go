@@ -7,15 +7,14 @@ import (
 type Usecase struct {
 	logger   infra.Logger
 	taskRepo TaskRepo
-	value    bool
 }
 
-func New(logger infra.Logger, taskRepo TaskRepo, value bool) *Usecase {
-	return &Usecase{logger: logger, taskRepo: taskRepo, value: value}
+func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
+	return &Usecase{logger: logger, taskRepo: taskRepo}
 }
 
 func (u *Usecase) Handle(userID int64, userTaskIDs []int64) error {
-	err := u.taskRepo.ToggleInWork(userID, userTaskIDs, u.value)
+	err := u.taskRepo.UntakeTask(userID, userTaskIDs)
 	if err != nil {
 		return err
 	}
