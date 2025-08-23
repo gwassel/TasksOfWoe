@@ -15,7 +15,7 @@ jobs:
     steps:
     - name: deploy
       run: |
-        cd /home/tasksofwoe/TasksOfWoe
+        cd $PROJECTPATH
         make down
         git pull
         make upd
