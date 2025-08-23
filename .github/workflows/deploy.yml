@@ -1,0 +1,20 @@
+name: Deploy to production
+
+concurrency: production
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deployment:
+    runs-on: self-hosted
+    environment: production
+    steps:
+    - name: deploy
+      run: |
+        cd /home/tasksofwoe/TasksOfWoe
+        make down
+        git pull
+        make up
