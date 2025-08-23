@@ -17,4 +17,4 @@ jobs:
         cd /home/tasksofwoe/TasksOfWoe
         make down
         git pull
-        make up
+        make up&
