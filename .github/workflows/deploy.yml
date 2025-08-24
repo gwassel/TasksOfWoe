@@ -27,10 +27,11 @@ jobs:
     runs-on: self-hosted
     environment: production
     steps:
-    - name: deploy
+    - name: deploy 
       run: |
-        cd $PROJECT_PATH
+        cd ${{ vars.PROJECT_PATH }}
         make down
         git switch main
         git pull
+        export TGBOTAPI=${{ secrets.TGBOTAPI }}
         make upd
