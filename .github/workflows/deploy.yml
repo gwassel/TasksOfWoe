@@ -15,7 +15,8 @@ jobs:
     steps:
     - name: deploy
       run: |
-        cd $PROJECTPATH
+        cd $PROJECT_PATH
         make down
+        git switch main
         git pull
         make upd
