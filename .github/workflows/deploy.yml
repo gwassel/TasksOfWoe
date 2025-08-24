@@ -29,8 +29,9 @@ jobs:
     steps:
     - name: deploy
       run: |
-        cd $PROJECT_PATH
+        cd /home/tasksofwoe/TasksOfWoe
         make down
         git switch main
         git pull
+        export TGBOTAPI=${{ secrets.TGBOTAPI }}
         make upd
