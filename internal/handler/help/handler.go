@@ -26,18 +26,16 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 	}
 }
 
-const messagetext string = `Available commands:` + "`" + `
-help                  list available commands
-add <text\>            add new task
-com\[plete\] <id\>       complete a task
-desc\[ription\] <id\>    print task description
-list \(ls\)             list current tasks
-listall \(la\)          list all tasks
-take                  start working on
-                      an incomplete task
-untake                stop working on
-                      an active task
-` + "`"
+const messagetext string = `Available commands:
+*help* \- list available commands
+*add* \- add new task
+*com* \(_complete_\) \- complete a task
+*desc* \(_description_\) \- print task description
+*ls* \(_list_\) \- list current tasks
+*la* \(_listall_\) \- list all tasks
+*take* \- start working on an incomplete task
+*untake* \- stop working on an active task
+`
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
 	text := strings.TrimSpace(strings.TrimPrefix(message.Text, "help"))
