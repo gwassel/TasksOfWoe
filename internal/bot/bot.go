@@ -65,7 +65,7 @@ func (b *Bot) HandleMessage(message *tgbotapi.Message) {
 	}
 }
 
-const messagetext string = `Unknown command. List of available commands:
+const messagetext string = `Unknown command\. List of available commands:
 *help* \- list available commands
 *add* \- add new task
 *complete* \(_com_\) \- complete a task
