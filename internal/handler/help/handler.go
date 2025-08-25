@@ -29,10 +29,10 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 const messagetext string = `Available commands:
 *help* \- list available commands
 *add* \- add new task
-*com* \(_complete_\) \- complete a task
-*desc* \(_description_\) \- print task description
-*ls* \(_list_\) \- list current tasks
-*la* \(_listall_\) \- list all tasks
+*complete* \(_com_\) \- complete a task
+*description* \(_desc_\) \- print task description
+*list* \(_ls_\) \- list current tasks
+*listall* \(_la_\) \- list all tasks
 *take* \- start working on an incomplete task
 *untake* \- stop working on an active task
 `
