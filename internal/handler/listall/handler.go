@@ -56,21 +56,21 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		status := task.Status()
 		switch status {
 		case domain.Working:
-			taskList.WriteString(fmt.Sprintf("%d*. ", task.ID))
+			taskList.WriteString(fmt.Sprintf("%d*. ", task.UserTaskID))
 
 		case domain.Incomplete:
 			if separatorflag1 {
 				separatorflag1 = false
 				taskList.WriteString("\n")
 			}
-			taskList.WriteString(fmt.Sprintf("%d. ", task.ID))
+			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
 
 		case domain.Completed:
 			if separatorflag2 {
 				separatorflag2 = false
 				taskList.WriteString("\n")
 			}
-			taskList.WriteString(fmt.Sprintf("%d. ", task.ID))
+			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
 		}
 
 		if utf8.RuneCountInString(task.Task) > h.maxlen {

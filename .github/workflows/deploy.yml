@@ -1,0 +1,37 @@
+name: Deploy to production
+
+concurrency: production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.1
+
+  deployment:
+    needs: golangci
+    runs-on: self-hosted
+    environment: production
+    steps:
+    - name: deploy
+      run: |
+        cd $PROJECT_PATH
+        make down
+        git switch main
+        git pull
+        export TGBOTAPI=${{ secrets.TGBOTAPI }}
+        make upd
