@@ -16,7 +16,7 @@ permissions:
 jobs:
   golangci:
     name: lint
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -28,7 +28,7 @@ jobs:
           version: v2.1
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: golangci
     steps:
       - name: Checkout code
@@ -41,3 +41,18 @@ jobs:
 
       - name: Run tests
         run: go test ./...
+
+  deploy:
+    runs-on: self-hosted
+    environment: production
+    needs: test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+    - name: deploy
+      run: |
+        cd $PROJECT_PATH
+        make down
+        git switch main
+        git pull
+        export TGBOTAPI=${{ secrets.TGBOTAPI }}
+        make upd
