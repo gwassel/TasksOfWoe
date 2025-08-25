@@ -57,13 +57,28 @@ func (b *Bot) HandleMessage(message *tgbotapi.Message) {
 	case strings.HasPrefix(text, "desc"):
 		b.handlersMap["desc"].Handle(message)
 
+	case strings.HasPrefix(text, "help"):
+		b.handlersMap["help"].Handle(message)
+
 	default:
-		b.SendMessage(message.Chat.ID, "Unknown command. Use /add, /list, or /complete.")
+		b.SendMessage(message.Chat.ID, messagetext)
 	}
 }
 
+const messagetext string = `Unknown command. List of available commands:
+*help* \- list available commands
+*add* \- add new task
+*complete* \(_com_\) \- complete a task
+*description* \(_desc_\) \- print task description
+*list* \(_ls_\) \- list current tasks
+*listall* \(_la_\) \- list all tasks
+*take* \- start working on an incomplete task
+*untake* \- stop working on an active task
+`
+
 func (b *Bot) SendMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
+	msg.ParseMode = tgbotapi.ModeMarkdownV2
 	_, err := b.API.Send(msg)
 	if err != nil {
 		b.logger.Error(errors.Wrap(err, "unable to send message"))
