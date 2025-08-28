@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/gwassel/TasksOfWoe/internal/domain/task"
+	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
