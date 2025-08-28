@@ -3,34 +3,55 @@ package encoder
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"strings"
+	"crypto/rand"
+	"encoding/hex"
+
+	"github.com/pkg/errors"
 )
 
 type Encoder struct {
-	c cipher.Block
+	gcm cipher.AEAD
 }
 
-func (e *Encoder) Encode(plaintext string) []byte {
-	// String lenght padding to make string size divisible by block size
-	var length int
-	if len(plaintext)%aes.BlockSize == 0 {
-		length = len(plaintext)
-	} else {
-		length = len(plaintext) + aes.BlockSize - len(plaintext)%aes.BlockSize
+func New(key string) (*Encoder, error) {
+	bytes, err := hex.DecodeString(key)
+	if err != nil {
+		return nil, err
 	}
 
-	in := make([]byte, length)
-	copy(in, []byte(plaintext))
-	out := make([]byte, length)
-	e.c.Encrypt(out, in)
+	c, err := aes.NewCipher([]byte(bytes))
+	if err != nil {
+		return nil, err
+	}
 
-	return out
+	gcm, err := cipher.NewGCM(c)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Encoder{gcm: gcm}, nil
 }
 
-func (e *Encoder) Decode(ciphertext []byte) string {
-	out := make([]byte, len(ciphertext))
-	e.c.Decrypt(out, ciphertext)
+func (e *Encoder) Encode(plaintext string) ([]byte, error) {
+	nonce := make([]byte, e.gcm.NonceSize())
+	// fill in nonce with random bytes
+	_, err := rand.Read(nonce)
+	if err != nil {
+		return nil, err
+	}
 
-	// Cut zeros added to the end of the strings before encoding
-	return strings.Trim(string(out), string('\x00'))
+	return e.gcm.Seal(nonce, nonce, []byte(plaintext), nil), nil
+}
+
+func (e *Encoder) Decode(ciphertext []byte) (string, error) {
+	if len(ciphertext) < e.gcm.NonceSize() {
+		return "", errors.New("Invalid data encryption")
+	}
+
+	nonce, ciphertext := ciphertext[:e.gcm.NonceSize()], ciphertext[e.gcm.NonceSize():]
+	plaintext, err := e.gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return "", err
+	}
+	return string(plaintext), nil
 }

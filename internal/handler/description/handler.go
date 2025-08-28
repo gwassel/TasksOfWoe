@@ -65,7 +65,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			taskDesc.WriteString("*")
 		}
 
-		taskDesc.WriteString(fmt.Sprintf(". %s\n\n", task.Task))
+		taskDesc.WriteString(fmt.Sprintf(". %s\n\n", task.Text))
 		createdAt, err := domain.FormatDateForTask(task.CreatedAt)
 		if err != nil {
 			h.logger.Error(err)
