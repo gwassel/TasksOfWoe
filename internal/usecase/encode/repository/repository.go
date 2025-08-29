@@ -18,16 +18,13 @@ func New(db *sqlx.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) ListTasks(userID int64) ([]domain.Task, error) {
-	op := "list tasks"
+func (r *repository) GetUnencryptedTasks() ([]domain.Task, error) {
+	op := "Get unencrypted tasks"
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
-		Select(
-			"*",
-		).
+		Select("*").
 		From("tasks").
-		Where(sq.And{sq.Eq{"user_id": userID}, sq.Eq{"completed": false}}).
-		OrderBy("is_in_work DESC", "user_task_id ASC")
+		Where(sq.Eq{"task": nil})
 
 	query, args, err := builder.ToSql()
 	if err != nil {
@@ -42,4 +39,25 @@ func (r *repository) ListTasks(userID int64) ([]domain.Task, error) {
 	}
 
 	return tasks, nil
+}
+
+func (r *repository) EncryptTask(taskID int64, task []byte) error {
+	op := "Encode task"
+
+	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
+		Update("tasks").
+		Set("task", task).
+		Where(sq.Eq{"id": taskID})
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return errors.Wrapf(err, "failed to build query '%s'", query)
+	}
+	query = fmt.Sprintf("-- %s\n%s", op, query)
+
+	_, err = r.db.ExecContext(context.TODO(), query, args...)
+	if err != nil {
+		return errors.Wrapf(err, "failed to exec query '%s'", query)
+	}
+	return err
 }

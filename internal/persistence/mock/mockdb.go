@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"github.com/gwassel/TasksOfWoe/internal/domain"
+	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/stretchr/testify/mock"
 )
 

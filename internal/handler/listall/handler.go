@@ -7,7 +7,7 @@ import (
 	"unicode/utf8"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/gwassel/TasksOfWoe/internal/domain"
+	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
 )
@@ -73,15 +73,15 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
 		}
 
-		if utf8.RuneCountInString(task.Task) > h.maxlen {
-			task.Task = h.cutText(task.Task)
+		if utf8.RuneCountInString(task.Text) > h.maxlen {
+			task.Text = h.cutText(task.Text)
 			// TODO: добавить кликабельность (#41)
 		}
 
-		if strings.Contains(task.Task, "\n") {
-			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Task, status.ToString()))
+		if strings.Contains(task.Text, "\n") {
+			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Text, status.ToString()))
 		} else {
-			taskList.WriteString(fmt.Sprintf("%s [%s]\n", task.Task, status.ToString()))
+			taskList.WriteString(fmt.Sprintf("%s [%s]\n", task.Text, status.ToString()))
 		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())
