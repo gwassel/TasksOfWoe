@@ -18,7 +18,6 @@ import (
 	add_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/add"
 	complete_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/complete"
 	description_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/description"
-	encode_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/encode"
 	list_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/list"
 	listall_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/listall"
 	take_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/take"
@@ -38,7 +37,6 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
 	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
-	encKey := os.Getenv("ENCRYPTION_KEY")
 
 	// Connect to PostgreSQL
 	connStr := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s",
@@ -85,12 +83,6 @@ func main() {
 	takeUsecase := take_usecase.NewUsecase(sugar, db)
 	untakeUsecase := untake_usecase.NewUsecase(sugar, db)
 	descriptionUsecase := description_usecase.NewUsecase(sugar, db)
-	encodeUsecase := encode_usecase.NewUsecase(sugar, db, encKey)
-
-	err = encodeUsecase.Handle()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// handler
 	completeHandler := complete_handler.New(sugar, botApi, completeUsecase)
