@@ -55,4 +55,5 @@ jobs:
         git switch main
         git pull
         export TGBOTAPI=${{ secrets.TGBOTAPI }}
+        export ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
         make upd

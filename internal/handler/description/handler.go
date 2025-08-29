@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/gwassel/TasksOfWoe/internal/domain"
+	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
 )
@@ -65,7 +65,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			taskDesc.WriteString("*")
 		}
 
-		taskDesc.WriteString(fmt.Sprintf(". %s\n\n", task.Task))
+		taskDesc.WriteString(fmt.Sprintf(". %s\n\n", task.Text))
 		createdAt, err := domain.FormatDateForTask(task.CreatedAt)
 		if err != nil {
 			h.logger.Error(err)

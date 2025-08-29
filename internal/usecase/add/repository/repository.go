@@ -17,7 +17,7 @@ func New(db *sqlx.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) AddTask(userID int64, task string) (int64, error) {
+func (r *repository) AddTask(userID int64, task []byte) (int64, error) {
 	op := "insert task"
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).

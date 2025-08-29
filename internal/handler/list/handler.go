@@ -59,15 +59,15 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
 		}
 
-		if utf8.RuneCountInString(task.Task) > h.maxlen {
-			task.Task = h.cutText(task.Task)
+		if utf8.RuneCountInString(task.Text) > h.maxlen {
+			task.Text = h.cutText(task.Text)
 			// TODO: добавить кликабельность (#41)
 		}
 
-		if strings.Contains(task.Task, "\n") {
-			taskList.WriteString(fmt.Sprintf("\"%s\"\n", task.Task))
+		if strings.Contains(task.Text, "\n") {
+			taskList.WriteString(fmt.Sprintf("\"%s\"\n", task.Text))
 		} else {
-			taskList.WriteString(fmt.Sprintf("%s\n", task.Task))
+			taskList.WriteString(fmt.Sprintf("%s\n", task.Text))
 		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())

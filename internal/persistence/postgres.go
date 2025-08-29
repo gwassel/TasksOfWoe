@@ -1,7 +1,7 @@
 package persistence
 
 import (
-	"github.com/gwassel/TasksOfWoe/internal/domain"
+	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/jmoiron/sqlx"
 )
 
