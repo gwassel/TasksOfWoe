@@ -54,6 +54,6 @@ jobs:
         make down
         git switch main
         git pull
-        export TGBOTAPI=${{ secrets.TGBOTAPI }}
-        export ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+        echo "TGBOTAPI=${{ secrets.TGBOTAPI }}" >.env
+        echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >>.env
         make upd
