@@ -7,6 +7,7 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/gwassel/TasksOfWoe/internal/bot"
+	"github.com/gwassel/TasksOfWoe/internal/domain/encoder"
 	add_handler "github.com/gwassel/TasksOfWoe/internal/handler/add"
 	complete_handler "github.com/gwassel/TasksOfWoe/internal/handler/complete"
 	description_handler "github.com/gwassel/TasksOfWoe/internal/handler/description"
@@ -77,10 +78,15 @@ func main() {
 	sugar := logger.Sugar()
 	sugar.Info("started")
 
+	encoder, err := encoder.New(os.Getenv("ENCRYPTION_KEY"))
+	if err != nil {
+		logger.Fatal("failed to create encoder")
+	}
+
 	// usecase
 	completeUsecase := complete_usecase.NewUsecase(sugar, db)
 	addUsecase := add_usecase.NewUsecase(db)
-	listUsecase := list_usecase.NewUsecase(sugar, db)
+	listUsecase := list_usecase.NewUsecase(sugar, db, encoder)
 	listallUsecase := listall_usecase.NewUsecase(db)
 	takeUsecase := take_usecase.NewUsecase(sugar, db)
 	untakeUsecase := untake_usecase.NewUsecase(sugar, db)
