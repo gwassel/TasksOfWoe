@@ -1,2 +1,2 @@
 ALTER TABLE tasks
-    DROP COLUMN task_unencrypted;
+    DROP COLUMN task;

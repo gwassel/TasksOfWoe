@@ -22,7 +22,7 @@ func (r *repository) AddTask(userID int64, task []byte) (int64, error) {
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
 		Insert("tasks").
-		Columns("user_id", "task", "user_task_id").
+		Columns("user_id", "encrypted_task", "user_task_id").
 		Values(userID, task, sq.Expr("(SELECT COALESCE(MAX(user_task_id)+1, 1) FROM tasks where user_id=$3)", userID)).
 		Suffix("RETURNING user_task_id")
 

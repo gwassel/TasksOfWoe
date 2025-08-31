@@ -1,9 +1,6 @@
 package usecase
 
 import (
-	"os"
-
-	"github.com/gwassel/TasksOfWoe/internal/domain/encoder"
 	"github.com/pkg/errors"
 )
 
@@ -16,15 +13,7 @@ func New(taskRepo TaskRepo) *Usecase {
 }
 
 func (u *Usecase) Handle(userID int64, task string) (int64, error) {
-	e, err := encoder.New(os.Getenv("ENCRYPTION_KEY"))
-	if err != nil {
-		return 0, errors.Wrap(err, "failed to add task")
-	}
-	ct, err := e.Encode(task)
-	if err != nil {
-		return 0, errors.Wrap(err, "failed to add task")
-	}
-	userTaskID, err := u.taskRepo.AddTask(userID, ct)
+	userTaskID, err := u.taskRepo.AddTask(userID, task)
 	if err != nil {
 		return 0, errors.Wrap(err, "failed to add task")
 	}
