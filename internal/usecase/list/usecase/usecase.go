@@ -28,7 +28,7 @@ func (u *Usecase) Handle(userID int64) ([]domain.Task, error) {
 		return nil, err
 	}
 	for i, task := range tasks {
-		tasks[i].Text, err = e.Decode(task.Task)
+		tasks[i].Task, err = e.Decode(task.EncryptedTask)
 		if err != nil {
 			return nil, err
 		}
