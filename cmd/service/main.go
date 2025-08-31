@@ -38,6 +38,7 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
 	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
+	encKey := os.Getenv("ENCRYPTION_KEY")
 
 	// Connect to PostgreSQL
 	connStr := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s",
@@ -76,7 +77,7 @@ func main() {
 	sugar := logger.Sugar()
 	sugar.Info("started")
 
-	encoder, err := encoder.New(os.Getenv("ENCRYPTION_KEY"))
+	encoder, err := encoder.New(encKey)
 	if err != nil {
 		logger.Fatal("failed to create encoder")
 	}
