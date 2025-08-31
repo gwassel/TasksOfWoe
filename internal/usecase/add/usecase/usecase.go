@@ -22,7 +22,7 @@ func (u *Usecase) Handle(userID int64, task string) (int64, error) {
 	}
 	ct, err := e.Encode(task)
 	if err != nil {
-		return 0, errors.Wrap(err, "failed to add task")
+		return 0, errors.Wrap(err, "failed to encode task")
 	}
 	userTaskID, err := u.taskRepo.AddTask(userID, ct)
 	if err != nil {
