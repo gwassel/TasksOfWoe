@@ -19,7 +19,6 @@ import (
 	add_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/add"
 	complete_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/complete"
 	description_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/description"
-	encode_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/encode"
 	list_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/list"
 	listall_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/listall"
 	take_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/take"
@@ -78,7 +77,7 @@ func main() {
 	sugar := logger.Sugar()
 	sugar.Info("started")
 
-	encoder, err := encoder.New(os.Getenv("ENCRYPTION_KEY"))
+	encoder, err := encoder.New(encKey)
 	if err != nil {
 		logger.Fatal("failed to create encoder")
 	}
@@ -91,12 +90,6 @@ func main() {
 	takeUsecase := take_usecase.NewUsecase(sugar, db)
 	untakeUsecase := untake_usecase.NewUsecase(sugar, db)
 	descriptionUsecase := description_usecase.NewUsecase(sugar, db, encoder)
-	encodeUsecase := encode_usecase.NewUsecase(sugar, db, encKey)
-
-	err = encodeUsecase.Handle()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// handler
 	completeHandler := complete_handler.New(sugar, botApi, completeUsecase)
