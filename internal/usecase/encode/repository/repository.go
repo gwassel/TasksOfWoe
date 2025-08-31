@@ -23,8 +23,7 @@ func (r *repository) GetUnencryptedTasks() ([]domain.Task, error) {
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
 		Select("*").
-		From("tasks").
-		Where(sq.Eq{"task": nil})
+		From("tasks")
 
 	query, args, err := builder.ToSql()
 	if err != nil {
@@ -46,7 +45,7 @@ func (r *repository) EncryptTask(taskID int64, task []byte) error {
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
 		Update("tasks").
-		Set("task", task).
+		Set("encrypted_task", task).
 		Where(sq.Eq{"id": taskID})
 
 	query, args, err := builder.ToSql()

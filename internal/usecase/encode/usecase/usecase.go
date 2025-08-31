@@ -26,7 +26,6 @@ func (u *Usecase) Handle() error {
 		return err
 	}
 	for _, task := range tasks {
-		println(task.Task)
 		ciphertext, err := e.Encode(task.Task)
 		if err != nil {
 			return err
