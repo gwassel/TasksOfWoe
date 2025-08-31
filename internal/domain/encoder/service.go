@@ -40,6 +40,7 @@ func (e *Encoder) Encode(plaintext string) ([]byte, error) {
 		return nil, err
 	}
 
+	// store both nonce and cyphertext
 	return e.gcm.Seal(nonce, nonce, []byte(plaintext), nil), nil
 }
 
@@ -48,7 +49,9 @@ func (e *Encoder) Decode(ciphertext []byte) (string, error) {
 		return "", errors.New("Invalid data encryption")
 	}
 
+	// split into nonce and ciphertext
 	nonce, ciphertext := ciphertext[:e.gcm.NonceSize()], ciphertext[e.gcm.NonceSize():]
+	// decode
 	plaintext, err := e.gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
 		return "", err
