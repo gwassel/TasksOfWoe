@@ -16,6 +16,7 @@ import (
 	listall_handler "github.com/gwassel/TasksOfWoe/internal/handler/listall"
 	take_handler "github.com/gwassel/TasksOfWoe/internal/handler/take"
 	untake_handler "github.com/gwassel/TasksOfWoe/internal/handler/untake"
+	"github.com/gwassel/TasksOfWoe/internal/persistence"
 	add_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/add"
 	complete_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/complete"
 	description_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/description"
@@ -24,7 +25,6 @@ import (
 	listall_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/listall"
 	take_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/take"
 	untake_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/untake"
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
@@ -44,6 +44,11 @@ func main() {
 	// Connect to PostgreSQL
 	connStr := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s",
 		dbHost, dbUser, dbName, dbPassword, dbPort)
+	db, err := persistence.NewDB(connStr)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer func() { _ = db.Close() }()
 
 	// Initialize Telegram Bot
 	botApi, err := tgbotapi.NewBotAPI(botToken)
@@ -57,12 +62,6 @@ func main() {
 	u.Timeout = 60
 
 	updates := botApi.GetUpdatesChan(u)
-
-	db, err := sqlx.Connect("postgres", connStr)
-	if err != nil {
-		panic(err.Error())
-	}
-	defer func() { _ = db.Close() }()
 
 	config := zap.NewProductionConfig()
 	config.OutputPaths = []string{"/var/log/task-tracker/app.log"}
