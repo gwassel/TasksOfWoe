@@ -1,6 +1,8 @@
 package usecase
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+)
 
 type Usecase struct {
 	taskRepo TaskRepo

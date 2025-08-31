@@ -41,6 +41,7 @@ services:
       DB_NAME: task_tracker
       DB_PORT: 5432
       TELEGRAM_BOT_TOKEN: ${TGBOTAPI}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
     ports:
       - "8080:8080"
     volumes:

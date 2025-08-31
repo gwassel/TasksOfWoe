@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE tasks
+    ADD COLUMN encrypted_task BYTEA NULL;
+
+COMMIT;
