@@ -46,7 +46,7 @@ func (r *repository) EncryptTask(taskID int64, task []byte) error {
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
 		Update("tasks").
-		Set("task", task).
+		Set("encrypted_task", task).
 		Where(sq.Eq{"id": taskID})
 
 	query, args, err := builder.ToSql()
