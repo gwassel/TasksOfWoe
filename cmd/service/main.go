@@ -85,12 +85,12 @@ func main() {
 
 	// usecase
 	completeUsecase := complete_usecase.NewUsecase(sugar, db)
-	addUsecase := add_usecase.NewUsecase(db)
+	addUsecase := add_usecase.NewUsecase(db, encoder)
 	listUsecase := list_usecase.NewUsecase(sugar, db, encoder)
-	listallUsecase := listall_usecase.NewUsecase(db)
+	listallUsecase := listall_usecase.NewUsecase(db, encoder)
 	takeUsecase := take_usecase.NewUsecase(sugar, db)
 	untakeUsecase := untake_usecase.NewUsecase(sugar, db)
-	descriptionUsecase := description_usecase.NewUsecase(sugar, db)
+	descriptionUsecase := description_usecase.NewUsecase(sugar, db, encoder)
 	encodeUsecase := encode_usecase.NewUsecase(sugar, db, encKey)
 
 	err = encodeUsecase.Handle()

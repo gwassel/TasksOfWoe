@@ -20,8 +20,8 @@ func New(
 	}
 }
 
-func (es *EncoderService) ListTasks(userID int64) ([]domain.Task, error) {
-	tasks, err := es.taskRepo.ListTasks(userID)
+func (es *EncoderService) ListAllTasks(userID int64) ([]domain.Task, error) {
+	tasks, err := es.taskRepo.ListAllTasks(userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to list tasks")
 	}
@@ -29,7 +29,7 @@ func (es *EncoderService) ListTasks(userID int64) ([]domain.Task, error) {
 	for i, task := range tasks {
 		tasks[i].Task, err = es.encoder.Decode(task.EncryptedTask)
 		if err != nil {
-			return nil, errors.Wrap(err, "Failed to decode tasks")
+			return nil, errors.Wrap(err, "Failed to decodee tasks")
 		}
 	}
 
