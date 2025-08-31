@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -33,18 +32,12 @@ import (
 
 func main() {
 	// Read environment variables
-	dbHost := os.Getenv("DB_HOST")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	dbPort := os.Getenv("DB_PORT")
 	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
 	encKey := os.Getenv("ENCRYPTION_KEY")
 
 	// Connect to PostgreSQL
-	connStr := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s",
-		dbHost, dbUser, dbName, dbPassword, dbPort)
-	db, err := persistence.NewDB(connStr)
+
+	db, err := persistence.NewDB()
 	if err != nil {
 		panic(err.Error())
 	}
