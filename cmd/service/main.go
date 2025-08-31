@@ -38,6 +38,7 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
 	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
+	encKey := os.Getenv("ENCRYPTION_KEY")
 
 	// Connect to PostgreSQL
 	connStr := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s",
