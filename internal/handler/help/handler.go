@@ -1,9 +1,11 @@
 package help
 
 import (
+	"fmt"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
 )
@@ -11,10 +13,11 @@ import (
 type Handler struct {
 	logger infra.Logger
 	api    BotApi
+	descs  map[string]domain.Description
 }
 
-func New(logger infra.Logger, api *tgbotapi.BotAPI) *Handler {
-	return &Handler{logger: logger, api: api}
+func New(logger infra.Logger, api *tgbotapi.BotAPI, descs map[string]domain.Description) *Handler {
+	return &Handler{logger: logger, api: api, descs: descs}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {
@@ -26,21 +29,28 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 	}
 }
 
-const messagetext string = `Available commands:
-*help* \- list available commands
-*add* \- add new task
-*complete* \(_com_\) \- complete a task
-*description* \(_desc_\) \- print task description
-*list* \(_ls_\) \- list current tasks
-*listall* \(_la_\) \- list all tasks
-*take* \- start working on an incomplete task
-*untake* \- stop working on an active task
-`
-
 func (h *Handler) Handle(message *tgbotapi.Message) {
 	text := strings.TrimSpace(strings.TrimPrefix(message.Text, "help"))
 
+	var helpMessage strings.Builder
+	helpMessage.WriteString("Available commands:\n")
 	if text == "" {
-		h.sendMessage(message.Chat.ID, messagetext)
+		for _, desc := range h.descs {
+			helpMessage.WriteString(
+				fmt.Sprintf("*%s*", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, desc.Name)),
+			)
+			if desc.Aliases != nil {
+				helpMessage.WriteString(` \(_`)
+				for _, alias := range desc.Aliases {
+					helpMessage.WriteString(alias)
+				}
+				helpMessage.WriteString(`\)_ `)
+			}
+			helpMessage.WriteString(
+				` \- ` + tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, desc.DescShort),
+			)
+			helpMessage.WriteString("\n")
+		}
 	}
+	h.sendMessage(message.Chat.ID, helpMessage.String())
 }

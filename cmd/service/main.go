@@ -7,6 +7,7 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/gwassel/TasksOfWoe/internal/bot"
+	"github.com/gwassel/TasksOfWoe/internal/domain"
 	add_handler "github.com/gwassel/TasksOfWoe/internal/handler/add"
 	complete_handler "github.com/gwassel/TasksOfWoe/internal/handler/complete"
 	description_handler "github.com/gwassel/TasksOfWoe/internal/handler/description"
@@ -84,6 +85,17 @@ func main() {
 	untakeUsecase := untake_usecase.NewUsecase(sugar, db)
 	descriptionUsecase := description_usecase.NewUsecase(sugar, db)
 
+	// command descriptions
+	descs := map[string]domain.Description{
+		"complete": completeUsecase.Desc,
+		"add":      addUsecase.Desc,
+		"list":     listUsecase.Desc,
+		"listall":  listallUsecase.Desc,
+		"take":     takeUsecase.Desc,
+		"untake":   untakeUsecase.Desc,
+		"desc":     descriptionUsecase.Desc,
+	}
+
 	// handler
 	completeHandler := complete_handler.New(sugar, botApi, completeUsecase)
 	addHandler := add_handler.New(sugar, botApi, addUsecase)
@@ -92,7 +104,7 @@ func main() {
 	takeHandler := take_handler.New(sugar, botApi, takeUsecase)
 	untakeHandler := untake_handler.New(sugar, botApi, untakeUsecase)
 	descriptionHandler := description_handler.New(sugar, botApi, descriptionUsecase)
-	helpHandler := help_handler.New(sugar, botApi)
+	helpHandler := help_handler.New(sugar, botApi, descs)
 
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)

@@ -8,10 +8,14 @@ import (
 type Usecase struct {
 	logger   infra.Logger
 	taskRepo TaskRepo
+	Desc     domain.Description
 }
 
 func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
-	return &Usecase{logger: logger, taskRepo: taskRepo}
+	desc := domain.Description{
+		Name: "list",
+	}
+	return &Usecase{logger: logger, taskRepo: taskRepo, Desc: desc}
 }
 
 func (u *Usecase) Handle(userID int64) ([]domain.Task, error) {

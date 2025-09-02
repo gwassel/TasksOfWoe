@@ -1,13 +1,25 @@
 package usecase
 
-import "github.com/pkg/errors"
+import (
+	"github.com/gwassel/TasksOfWoe/internal/domain"
+	"github.com/pkg/errors"
+)
 
 type Usecase struct {
 	taskRepo TaskRepo
+	Desc     domain.Description
 }
 
 func New(taskRepo TaskRepo) *Usecase {
-	return &Usecase{taskRepo: taskRepo}
+	desc := domain.Description{
+		Name:      "add",
+		Aliases:   nil,
+		DescShort: "add new task",
+		DescFull:  "add new task",
+		Format:    "add <task>",
+		Args:      []string{"task: task's description"},
+	}
+	return &Usecase{taskRepo: taskRepo, Desc: desc}
 }
 
 func (u *Usecase) Handle(userID int64, task string) (int64, error) {
