@@ -33,8 +33,8 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	text := strings.TrimSpace(strings.TrimPrefix(message.Text, "help"))
 
 	var helpMessage strings.Builder
-	helpMessage.WriteString("Available commands:\n")
 	if text == "" {
+		helpMessage.WriteString("Available commands:\n")
 		for _, desc := range h.descs {
 			helpMessage.WriteString(
 				fmt.Sprintf("*%s*", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, desc.Name)),
