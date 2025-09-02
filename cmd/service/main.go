@@ -86,14 +86,15 @@ func main() {
 	descriptionUsecase := description_usecase.NewUsecase(sugar, db)
 
 	// command descriptions
+	// TODO: support aliases, e.g. "help desc"
 	descs := map[string]domain.Description{
-		"complete": completeUsecase.Desc,
-		"add":      addUsecase.Desc,
-		"list":     listUsecase.Desc,
-		"listall":  listallUsecase.Desc,
-		"take":     takeUsecase.Desc,
-		"untake":   untakeUsecase.Desc,
-		"desc":     descriptionUsecase.Desc,
+		"complete":    completeUsecase.Desc,
+		"add":         addUsecase.Desc,
+		"list":        listUsecase.Desc,
+		"listall":     listallUsecase.Desc,
+		"take":        takeUsecase.Desc,
+		"untake":      untakeUsecase.Desc,
+		"description": descriptionUsecase.Desc,
 	}
 
 	// handler
@@ -106,18 +107,17 @@ func main() {
 	descriptionHandler := description_handler.New(sugar, botApi, descriptionUsecase)
 	helpHandler := help_handler.New(sugar, botApi, descs)
 
-	// TODO: support aliases, e.g. "help desc"
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)
 	}{
-		"com":         completeHandler,
-		"add":         addHandler,
-		"list":        listHandler,
-		"listall":     listallHandler,
-		"take":        takeHandler,
-		"untake":      untakeHandler,
-		"description": descriptionHandler,
-		"help":        helpHandler,
+		"com":     completeHandler,
+		"add":     addHandler,
+		"list":    listHandler,
+		"listall": listallHandler,
+		"take":    takeHandler,
+		"untake":  untakeHandler,
+		"desc":    descriptionHandler,
+		"help":    helpHandler,
 	}
 
 	handler := bot.NewBot(botApi, sugar, handlersMap)
