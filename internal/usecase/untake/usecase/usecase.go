@@ -13,7 +13,12 @@ type Usecase struct {
 
 func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
 	desc := domain.Description{
-		Name: "untake",
+		Name:      "untake",
+		Aliases:   nil,
+		DescShort: "stop working on task(s)",
+		DescFull:  "",
+		Format:    "take <ids>",
+		Args:      []string{"ids: ids of tasks to stop working on"},
 	}
 	return &Usecase{logger: logger, taskRepo: taskRepo, Desc: desc}
 }

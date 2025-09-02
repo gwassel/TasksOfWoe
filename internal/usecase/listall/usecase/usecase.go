@@ -12,7 +12,12 @@ type Usecase struct {
 
 func New(taskRepo TaskRepo) *Usecase {
 	desc := domain.Description{
-		Name: "listall",
+		Name:      "listall",
+		Aliases:   []string{"la"},
+		DescShort: "list all tasks",
+		DescFull:  "list all tasks, including already completed",
+		Format:    "",
+		Args:      nil,
 	}
 	return &Usecase{taskRepo: taskRepo, Desc: desc}
 }
