@@ -16,7 +16,7 @@ func New(taskRepo TaskRepo) *Usecase {
 		Aliases:   []string{"la"},
 		DescShort: "list all tasks",
 		DescFull:  "list all tasks, including already completed",
-		Format:    "",
+		Format:    "listall",
 		Args:      nil,
 	}
 	return &Usecase{taskRepo: taskRepo, Desc: desc}

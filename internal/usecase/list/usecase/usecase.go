@@ -17,7 +17,7 @@ func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
 		Aliases:   []string{"ls"},
 		DescShort: "list tasks",
 		DescFull:  "list uncompleted tasks",
-		Format:    "",
+		Format:    "list",
 		Args:      nil,
 	}
 	return &Usecase{logger: logger, taskRepo: taskRepo, Desc: desc}

@@ -15,8 +15,8 @@ func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
 	desc := domain.Description{
 		Name:      "description",
 		Aliases:   []string{"desc"},
-		DescShort: "print task description",
-		DescFull:  "",
+		DescShort: "print task description(s)",
+		DescFull:  "print task description(s)",
 		Format:    "decription <ids>",
 		Args:      []string{"ids: IDs of tasks for which to write description"},
 	}

@@ -16,7 +16,7 @@ func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
 		Name:      "complete",
 		Aliases:   []string{"com"},
 		DescShort: "complete task(s)",
-		DescFull:  "",
+		DescFull:  "mark task(s) as completed",
 		Format:    "desc <ids>",
 		Args:      []string{"ids: list of IDs of tasks to mark completed"},
 	}

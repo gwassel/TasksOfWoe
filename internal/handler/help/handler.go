@@ -33,24 +33,65 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	text := strings.TrimSpace(strings.TrimPrefix(message.Text, "help"))
 
 	var helpMessage strings.Builder
+	// FIX: unlisted command, e.g. help "asdasd"
+	// TODO: fix order
 	if text == "" {
 		helpMessage.WriteString("Available commands:\n")
 		for _, desc := range h.descs {
-			helpMessage.WriteString(
-				fmt.Sprintf("*%s*", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, desc.Name)),
-			)
-			if desc.Aliases != nil {
-				helpMessage.WriteString(` \(_`)
-				for _, alias := range desc.Aliases {
-					helpMessage.WriteString(alias)
-				}
-				helpMessage.WriteString(`\)_ `)
-			}
-			helpMessage.WriteString(
-				` \- ` + tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, desc.DescShort),
-			)
-			helpMessage.WriteString("\n")
+			helpMessage.WriteString(printshort(desc))
 		}
+		helpMessage.WriteString(`type \"help \<command\>\" for command description`)
+	} else {
+		desc := h.descs[text]
+		helpMessage.WriteString(printfull(desc))
 	}
+
 	h.sendMessage(message.Chat.ID, helpMessage.String())
+}
+
+func printshort(d domain.Description) string {
+	var text strings.Builder
+
+	text.WriteString(
+		fmt.Sprintf("*%s*", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.Name)),
+	)
+	if d.Aliases != nil {
+		text.WriteString(` \(_`)
+		for _, alias := range d.Aliases {
+			text.WriteString(alias)
+		}
+		text.WriteString(`\)_ `)
+	}
+	text.WriteString(
+		` \- ` + tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.DescShort) + "\n",
+	)
+
+	return text.String()
+}
+
+func printfull(d domain.Description) string {
+	var text strings.Builder
+
+	text.WriteString(
+		fmt.Sprintf("*%s*", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.Name)),
+	)
+	if d.Aliases != nil {
+		text.WriteString(` \(_`)
+		for _, alias := range d.Aliases {
+			text.WriteString(alias)
+		}
+		text.WriteString(`\)_ `)
+	}
+	text.WriteString(
+		` \- ` + tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.DescFull) + "\n",
+	)
+
+	text.WriteString(
+		fmt.Sprintf("usage: `%s`\n", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.Format)),
+	)
+	for _, arg := range d.Args {
+		text.WriteString(tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, arg))
+	}
+
+	return text.String()
 }

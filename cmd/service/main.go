@@ -106,17 +106,18 @@ func main() {
 	descriptionHandler := description_handler.New(sugar, botApi, descriptionUsecase)
 	helpHandler := help_handler.New(sugar, botApi, descs)
 
+	// TODO: support aliases, e.g. "help desc"
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)
 	}{
-		"com":     completeHandler,
-		"add":     addHandler,
-		"list":    listHandler,
-		"listall": listallHandler,
-		"take":    takeHandler,
-		"untake":  untakeHandler,
-		"desc":    descriptionHandler,
-		"help":    helpHandler,
+		"com":         completeHandler,
+		"add":         addHandler,
+		"list":        listHandler,
+		"listall":     listallHandler,
+		"take":        takeHandler,
+		"untake":      untakeHandler,
+		"description": descriptionHandler,
+		"help":        helpHandler,
 	}
 
 	handler := bot.NewBot(botApi, sugar, handlersMap)
