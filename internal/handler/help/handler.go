@@ -11,13 +11,14 @@ import (
 )
 
 type Handler struct {
-	logger infra.Logger
-	api    BotApi
-	descs  map[string]domain.Description
+	logger     infra.Logger
+	api        BotApi
+	descsmap   map[string]domain.Description
+	descsslice []domain.Description
 }
 
-func New(logger infra.Logger, api *tgbotapi.BotAPI, descs map[string]domain.Description) *Handler {
-	return &Handler{logger: logger, api: api, descs: descs}
+func New(logger infra.Logger, api *tgbotapi.BotAPI, descsmap map[string]domain.Description, descsslice []domain.Description) *Handler {
+	return &Handler{logger: logger, api: api, descsmap: descsmap, descsslice: descsslice}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {
@@ -37,12 +38,12 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	// TODO: fix order
 	if text == "" {
 		helpMessage.WriteString("Available commands:\n")
-		for _, desc := range h.descs {
+		for _, desc := range h.descsslice {
 			helpMessage.WriteString(printshort(desc))
 		}
 		helpMessage.WriteString(`type \"help \<command\>\" for command description`)
 	} else {
-		desc := h.descs[text]
+		desc := h.descsmap[text]
 		helpMessage.WriteString(printfull(desc))
 	}
 
