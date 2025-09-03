@@ -101,13 +101,13 @@ func main() {
 	}
 
 	descsslice := []domain.Description{
-		completeUsecase.Desc,
 		addUsecase.Desc,
 		listUsecase.Desc,
 		listallUsecase.Desc,
+		descriptionUsecase.Desc,
 		takeUsecase.Desc,
 		untakeUsecase.Desc,
-		descriptionUsecase.Desc,
+		completeUsecase.Desc,
 	}
 
 	// handler
