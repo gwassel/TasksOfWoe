@@ -1,6 +1,6 @@
 package usecase
 
-import "github.com/gwassel/TasksOfWoe/internal/domain"
+import domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 
 type Usecase struct {
 	Desc domain.Description

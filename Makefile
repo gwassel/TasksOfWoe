@@ -1,5 +1,5 @@
 # Variables
-PROJECT_NAME=tasky
+PROJECT_NAME=task_tracker
 DOCKER_COMPOSE=docker-compose -f docker-compose.yml
 
 # Default target

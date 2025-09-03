@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/gwassel/TasksOfWoe/internal/domain"
+	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 )
 
