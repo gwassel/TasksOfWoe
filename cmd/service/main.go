@@ -19,6 +19,7 @@ import (
 	add_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/add"
 	complete_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/complete"
 	description_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/description"
+	help_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/help"
 	list_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/list"
 	listall_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/listall"
 	take_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/take"
@@ -84,6 +85,7 @@ func main() {
 	takeUsecase := take_usecase.NewUsecase(sugar, db)
 	untakeUsecase := untake_usecase.NewUsecase(sugar, db)
 	descriptionUsecase := description_usecase.NewUsecase(sugar, db)
+	helpUsecase := help_usecase.NewUsecase()
 
 	// command descriptions
 	descsmap := map[string]domain.Description{
@@ -98,6 +100,7 @@ func main() {
 		"untake":      untakeUsecase.Desc,
 		"description": descriptionUsecase.Desc,
 		"desc":        descriptionUsecase.Desc,
+		"help":        helpUsecase.Desc,
 	}
 
 	descsslice := []domain.Description{
@@ -108,6 +111,7 @@ func main() {
 		takeUsecase.Desc,
 		untakeUsecase.Desc,
 		completeUsecase.Desc,
+		helpUsecase.Desc,
 	}
 
 	// handler

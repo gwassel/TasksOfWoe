@@ -17,7 +17,12 @@ type Handler struct {
 	descsslice []domain.Description
 }
 
-func New(logger infra.Logger, api *tgbotapi.BotAPI, descsmap map[string]domain.Description, descsslice []domain.Description) *Handler {
+func New(
+	logger infra.Logger,
+	api *tgbotapi.BotAPI,
+	descsmap map[string]domain.Description,
+	descsslice []domain.Description,
+) *Handler {
 	return &Handler{logger: logger, api: api, descsmap: descsmap, descsslice: descsslice}
 }
 
@@ -34,22 +39,21 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	text := strings.TrimSpace(strings.TrimPrefix(message.Text, "help"))
 
 	var helpMessage strings.Builder
-	// FIX: unlisted command, e.g. help "asdasd"
 	if text == "" {
 		helpMessage.WriteString("Available commands:\n")
 		for _, desc := range h.descsslice {
-			helpMessage.WriteString(printshort(desc))
+			helpMessage.WriteString(printShort(desc))
 		}
 		helpMessage.WriteString(`type \"help \<command\>\" for command description`)
 	} else {
 		desc := h.descsmap[text]
-		helpMessage.WriteString(printfull(desc))
+		helpMessage.WriteString(printFull(desc))
 	}
 
 	h.sendMessage(message.Chat.ID, helpMessage.String())
 }
 
-func printshort(d domain.Description) string {
+func printShort(d domain.Description) string {
 	var text strings.Builder
 
 	text.WriteString(
@@ -60,7 +64,7 @@ func printshort(d domain.Description) string {
 		for _, alias := range d.Aliases {
 			text.WriteString(alias)
 		}
-		text.WriteString(`\)_ `)
+		text.WriteString(`_\) `)
 	}
 	text.WriteString(
 		` \- ` + tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.DescShort) + "\n",
@@ -69,7 +73,11 @@ func printshort(d domain.Description) string {
 	return text.String()
 }
 
-func printfull(d domain.Description) string {
+func printFull(d domain.Description) string {
+	if d.Name == "" {
+		return `Unknown command\. Type \"help\" to see the list of available commands\.`
+	}
+
 	var text strings.Builder
 
 	text.WriteString(
@@ -80,7 +88,7 @@ func printfull(d domain.Description) string {
 		for _, alias := range d.Aliases {
 			text.WriteString(alias)
 		}
-		text.WriteString(`\)_ `)
+		text.WriteString(`_\) `)
 	}
 	text.WriteString(
 		` \- ` + tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.DescFull) + "\n",
