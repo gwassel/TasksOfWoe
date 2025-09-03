@@ -123,13 +123,13 @@ func main() {
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)
 	}{
-		"com":     completeHandler,
 		"add":     addHandler,
 		"list":    listHandler,
 		"listall": listallHandler,
+		"desc":    descriptionHandler,
 		"take":    takeHandler,
 		"untake":  untakeHandler,
-		"desc":    descriptionHandler,
+		"com":     completeHandler,
 		"help":    helpHandler,
 	}
 

@@ -35,7 +35,6 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 
 	var helpMessage strings.Builder
 	// FIX: unlisted command, e.g. help "asdasd"
-	// TODO: fix order
 	if text == "" {
 		helpMessage.WriteString("Available commands:\n")
 		for _, desc := range h.descsslice {
