@@ -14,8 +14,8 @@ func New(taskRepo TaskRepo) *Usecase {
 	desc := domain.Description{
 		Name:      "add",
 		Aliases:   nil,
-		DescShort: "add new task",
-		DescFull:  "add new task",
+		DescShort: "add a new task",
+		DescFull:  "add a new task with given description",
 		Format:    "add <task>",
 		Args:      []string{"task: task's description"},
 	}

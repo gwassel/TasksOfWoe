@@ -18,7 +18,7 @@ func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
 		DescShort: "stop working on task(s)",
 		DescFull:  "stop working on task(s)",
 		Format:    "take <ids>",
-		Args:      []string{"ids: ids of tasks to stop working on"},
+		Args:      []string{"ids: IDs of tasks to stop working on"},
 	}
 	return &Usecase{logger: logger, taskRepo: taskRepo, Desc: desc}
 }

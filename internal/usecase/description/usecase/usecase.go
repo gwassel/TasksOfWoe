@@ -18,7 +18,7 @@ func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
 		DescShort: "print task description(s)",
 		DescFull:  "print task description(s)",
 		Format:    "decription <ids>",
-		Args:      []string{"ids: IDs of tasks for which to write description"},
+		Args:      []string{"ids: IDs of tasks to get description for"},
 	}
 	return &Usecase{logger: logger, taskRepo: taskRepo, Desc: desc}
 }
