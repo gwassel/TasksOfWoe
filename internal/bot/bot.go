@@ -61,20 +61,12 @@ func (b *Bot) HandleMessage(message *tgbotapi.Message) {
 		b.handlersMap["help"].Handle(message)
 
 	default:
-		b.SendMessage(message.Chat.ID, messagetext)
+		b.SendMessage(
+			message.Chat.ID,
+			`Unknown command\. Type \"help\" to see the list of available commands\.`,
+		)
 	}
 }
-
-const messagetext string = `Unknown command\. List of available commands:
-*help* \- list available commands
-*add* \- add new task
-*complete* \(_com_\) \- complete a task
-*description* \(_desc_\) \- print task description
-*list* \(_ls_\) \- list current tasks
-*listall* \(_la_\) \- list all tasks
-*take* \- start working on an incomplete task
-*untake* \- stop working on an active task
-`
 
 func (b *Bot) SendMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)

@@ -62,3 +62,12 @@ func (status taskStatus) ToString() string {
 	}
 	return ""
 }
+
+type Description struct {
+	Name      string
+	Aliases   []string
+	DescShort string
+	DescFull  string
+	Format    string
+	Args      []string
+}

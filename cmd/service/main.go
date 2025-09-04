@@ -19,6 +19,7 @@ import (
 	add_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/add"
 	complete_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/complete"
 	description_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/description"
+	help_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/help"
 	list_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/list"
 	listall_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/listall"
 	take_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/take"
@@ -90,6 +91,23 @@ func main() {
 	takeUsecase := take_usecase.NewUsecase(sugar, db)
 	untakeUsecase := untake_usecase.NewUsecase(sugar, db)
 	descriptionUsecase := description_usecase.NewUsecase(sugar, db, encoder)
+	helpUsecase := help_usecase.NewUsecase()
+
+	// command descriptions
+	descs := map[string]help_handler.HelpEntry{
+		"com":         {Is_alias: true, Desc: completeUsecase.Desc},
+		"complete":    {Is_alias: false, Desc: completeUsecase.Desc},
+		"add":         {Is_alias: false, Desc: addUsecase.Desc},
+		"list":        {Is_alias: false, Desc: listUsecase.Desc},
+		"ls":          {Is_alias: true, Desc: listUsecase.Desc},
+		"listall":     {Is_alias: false, Desc: listallUsecase.Desc},
+		"la":          {Is_alias: true, Desc: listallUsecase.Desc},
+		"take":        {Is_alias: false, Desc: takeUsecase.Desc},
+		"untake":      {Is_alias: false, Desc: untakeUsecase.Desc},
+		"description": {Is_alias: false, Desc: descriptionUsecase.Desc},
+		"desc":        {Is_alias: true, Desc: descriptionUsecase.Desc},
+		"help":        {Is_alias: false, Desc: helpUsecase.Desc},
+	}
 
 	// handler
 	completeHandler := complete_handler.New(sugar, botApi, completeUsecase)
@@ -99,18 +117,18 @@ func main() {
 	takeHandler := take_handler.New(sugar, botApi, takeUsecase)
 	untakeHandler := untake_handler.New(sugar, botApi, untakeUsecase)
 	descriptionHandler := description_handler.New(sugar, botApi, descriptionUsecase)
-	helpHandler := help_handler.New(sugar, botApi)
+	helpHandler := help_handler.New(sugar, botApi, descs)
 
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)
 	}{
-		"com":     completeHandler,
 		"add":     addHandler,
 		"list":    listHandler,
 		"listall": listallHandler,
+		"desc":    descriptionHandler,
 		"take":    takeHandler,
 		"untake":  untakeHandler,
-		"desc":    descriptionHandler,
+		"com":     completeHandler,
 		"help":    helpHandler,
 	}
 

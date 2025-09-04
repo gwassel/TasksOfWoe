@@ -7,10 +7,19 @@ import (
 
 type Usecase struct {
 	taskRepo TaskRepo
+	Desc     domain.Description
 }
 
 func New(taskRepo TaskRepo) *Usecase {
-	return &Usecase{taskRepo: taskRepo}
+	desc := domain.Description{
+		Name:      "listall",
+		Aliases:   []string{"la"},
+		DescShort: "list all tasks",
+		DescFull:  "list all tasks, including already completed",
+		Format:    "listall",
+		Args:      nil,
+	}
+	return &Usecase{taskRepo: taskRepo, Desc: desc}
 }
 
 func (u *Usecase) Handle(userID int64) ([]domain.Task, error) {

@@ -1,16 +1,26 @@
 package usecase
 
 import (
+	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 )
 
 type Usecase struct {
 	logger   infra.Logger
 	taskRepo TaskRepo
+	Desc     domain.Description
 }
 
 func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
-	return &Usecase{logger: logger, taskRepo: taskRepo}
+	desc := domain.Description{
+		Name:      "untake",
+		Aliases:   nil,
+		DescShort: "stop working on task(s)",
+		DescFull:  "stop working on task(s)",
+		Format:    "take <ids>",
+		Args:      []string{"ids: IDs of tasks to stop working on"},
+	}
+	return &Usecase{logger: logger, taskRepo: taskRepo, Desc: desc}
 }
 
 func (u *Usecase) Handle(userID int64, userTaskIDs []int64) error {
