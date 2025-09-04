@@ -61,9 +61,7 @@ func (b *Bot) HandleMessage(message *tgbotapi.Message) {
 		b.handlersMap["help"].Handle(message)
 
 	default:
-		b.SendMessage(message.Chat.ID, "Unknown command")
-		message.Text = "help"
-		b.handlersMap["help"].Handle(message)
+		b.SendMessage(message.Chat.ID, `Unknown command\. Type \"help\" to see the list of available commands\.`)
 	}
 }
 
