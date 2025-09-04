@@ -10,20 +10,23 @@ import (
 	"github.com/pkg/errors"
 )
 
+type HelpEntry struct {
+	Is_alias bool
+	Desc     domain.Description
+}
+
 type Handler struct {
-	logger     infra.Logger
-	api        BotApi
-	descsmap   map[string]domain.Description
-	descsslice []domain.Description
+	logger infra.Logger
+	api    BotApi
+	descs  map[string]HelpEntry
 }
 
 func New(
 	logger infra.Logger,
 	api *tgbotapi.BotAPI,
-	descsmap map[string]domain.Description,
-	descsslice []domain.Description,
+	descs map[string]HelpEntry,
 ) *Handler {
-	return &Handler{logger: logger, api: api, descsmap: descsmap, descsslice: descsslice}
+	return &Handler{logger: logger, api: api, descs: descs}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {
@@ -41,13 +44,15 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	var helpMessage strings.Builder
 	if text == "" {
 		helpMessage.WriteString("Available commands:\n")
-		for _, desc := range h.descsslice {
-			helpMessage.WriteString(printShort(desc))
+		for _, desc := range h.descs {
+			if !desc.Is_alias {
+				helpMessage.WriteString(printShort(desc.Desc))
+			}
 		}
 		helpMessage.WriteString(`type \"help \<command\>\" for command description`)
 	} else {
-		desc := h.descsmap[text]
-		helpMessage.WriteString(printFull(desc))
+		desc := h.descs[text]
+		helpMessage.WriteString(printFull(desc.Desc))
 	}
 
 	h.sendMessage(message.Chat.ID, helpMessage.String())

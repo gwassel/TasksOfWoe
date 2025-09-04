@@ -8,7 +8,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/gwassel/TasksOfWoe/internal/bot"
 	"github.com/gwassel/TasksOfWoe/internal/domain/encoder"
-	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	add_handler "github.com/gwassel/TasksOfWoe/internal/handler/add"
 	complete_handler "github.com/gwassel/TasksOfWoe/internal/handler/complete"
 	description_handler "github.com/gwassel/TasksOfWoe/internal/handler/description"
@@ -95,30 +94,19 @@ func main() {
 	helpUsecase := help_usecase.NewUsecase()
 
 	// command descriptions
-	descsmap := map[string]domain.Description{
-		"com":         completeUsecase.Desc,
-		"complete":    completeUsecase.Desc,
-		"add":         addUsecase.Desc,
-		"list":        listUsecase.Desc,
-		"ls":          listUsecase.Desc,
-		"listall":     listallUsecase.Desc,
-		"la":          listallUsecase.Desc,
-		"take":        takeUsecase.Desc,
-		"untake":      untakeUsecase.Desc,
-		"description": descriptionUsecase.Desc,
-		"desc":        descriptionUsecase.Desc,
-		"help":        helpUsecase.Desc,
-	}
-
-	descsslice := []domain.Description{
-		addUsecase.Desc,
-		listUsecase.Desc,
-		listallUsecase.Desc,
-		descriptionUsecase.Desc,
-		takeUsecase.Desc,
-		untakeUsecase.Desc,
-		completeUsecase.Desc,
-		helpUsecase.Desc,
+	descs := map[string]help_handler.HelpEntry{
+		"com":         {Is_alias: true, Desc: completeUsecase.Desc},
+		"complete":    {Is_alias: false, Desc: completeUsecase.Desc},
+		"add":         {Is_alias: false, Desc: addUsecase.Desc},
+		"list":        {Is_alias: false, Desc: listUsecase.Desc},
+		"ls":          {Is_alias: true, Desc: listUsecase.Desc},
+		"listall":     {Is_alias: false, Desc: listallUsecase.Desc},
+		"la":          {Is_alias: true, Desc: listallUsecase.Desc},
+		"take":        {Is_alias: false, Desc: takeUsecase.Desc},
+		"untake":      {Is_alias: false, Desc: untakeUsecase.Desc},
+		"description": {Is_alias: false, Desc: descriptionUsecase.Desc},
+		"desc":        {Is_alias: true, Desc: descriptionUsecase.Desc},
+		"help":        {Is_alias: false, Desc: helpUsecase.Desc},
 	}
 
 	// handler
@@ -129,7 +117,7 @@ func main() {
 	takeHandler := take_handler.New(sugar, botApi, takeUsecase)
 	untakeHandler := untake_handler.New(sugar, botApi, untakeUsecase)
 	descriptionHandler := description_handler.New(sugar, botApi, descriptionUsecase)
-	helpHandler := help_handler.New(sugar, botApi, descsmap, descsslice)
+	helpHandler := help_handler.New(sugar, botApi, descs)
 
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)
