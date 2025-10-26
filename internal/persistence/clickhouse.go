@@ -17,17 +17,21 @@ type CH struct {
 	logger       infra.Logger
 }
 
-func New(queueSize int) *CH {
-	return &CH{messageQueue: make(chan analytics.Event, queueSize)}
+func NewAnalyticsDaemon(db *sqlx.DB, queueSize int, logger infra.Logger) *CH {
+	return &CH{
+		db:           db,
+		messageQueue: make(chan analytics.Event, queueSize),
+		logger:       logger,
+	}
 }
 
 func (c *CH) WriteToDB(ctx context.Context, messages []analytics.Event) error {
 	queryBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
 		Insert("analytics_events").
 		Columns(
-			"user_id",
+			"tg_user_id",
 			"event_name",
-			"timestamp",
+			"event_timestamp",
 		)
 
 	for _, m := range messages {
@@ -59,13 +63,14 @@ func (c *CH) Write(message analytics.Event) {
 
 func (c *CH) StartWorker(ctx context.Context) {
 	go func() {
+		batch := makeNewBlancBatch()
 		for {
-			batch := make([]analytics.Event, 100)
 			select {
 			case m := <-c.messageQueue:
 				batch = append(batch, m)
 			case <-time.After(1 * time.Second):
 				c.handleBatch(ctx, batch)
+				batch = makeNewBlancBatch()
 				continue
 			case <-ctx.Done():
 				c.handleBatch(ctx, batch)
@@ -73,6 +78,10 @@ func (c *CH) StartWorker(ctx context.Context) {
 			}
 		}
 	}()
+}
+
+func makeNewBlancBatch() []analytics.Event {
+	return make([]analytics.Event, 0, 100)
 }
 
 func (c *CH) handleBatch(ctx context.Context, batch []analytics.Event) {

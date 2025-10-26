@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -16,6 +17,7 @@ import (
 	listall_handler "github.com/gwassel/TasksOfWoe/internal/handler/listall"
 	take_handler "github.com/gwassel/TasksOfWoe/internal/handler/take"
 	untake_handler "github.com/gwassel/TasksOfWoe/internal/handler/untake"
+	"github.com/gwassel/TasksOfWoe/internal/persistence"
 	add_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/add"
 	complete_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/complete"
 	description_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/description"
@@ -83,6 +85,11 @@ func main() {
 		logger.Fatal("failed to create encoder")
 	}
 
+	ctx := context.Background()
+
+	analyticsDaemon := persistence.NewAnalyticsDaemon(db, 1000, sugar)
+	analyticsDaemon.StartWorker(ctx)
+
 	// usecase
 	completeUsecase := complete_usecase.NewUsecase(sugar, db)
 	addUsecase := add_usecase.NewUsecase(db, encoder)
@@ -110,14 +117,19 @@ func main() {
 	}
 
 	// handler
-	completeHandler := complete_handler.New(sugar, botApi, completeUsecase)
-	addHandler := add_handler.New(sugar, botApi, addUsecase)
-	listHandler := list_handler.New(sugar, botApi, listUsecase)
-	listallHandler := listall_handler.New(sugar, botApi, listallUsecase)
-	takeHandler := take_handler.New(sugar, botApi, takeUsecase)
-	untakeHandler := untake_handler.New(sugar, botApi, untakeUsecase)
-	descriptionHandler := description_handler.New(sugar, botApi, descriptionUsecase)
-	helpHandler := help_handler.New(sugar, botApi, descs)
+	completeHandler := complete_handler.New(sugar, analyticsDaemon, botApi, completeUsecase)
+	addHandler := add_handler.New(sugar, analyticsDaemon, botApi, addUsecase)
+	listHandler := list_handler.New(sugar, analyticsDaemon, botApi, listUsecase)
+	listallHandler := listall_handler.New(sugar, analyticsDaemon, botApi, listallUsecase)
+	takeHandler := take_handler.New(sugar, analyticsDaemon, botApi, takeUsecase)
+	untakeHandler := untake_handler.New(sugar, analyticsDaemon, botApi, untakeUsecase)
+	descriptionHandler := description_handler.New(
+		sugar,
+		analyticsDaemon,
+		botApi,
+		descriptionUsecase,
+	)
+	helpHandler := help_handler.New(sugar, analyticsDaemon, botApi, descs)
 
 	handlersMap := map[string]interface {
 		Handle(message *tgbotapi.Message)

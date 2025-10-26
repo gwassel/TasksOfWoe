@@ -26,10 +26,11 @@ type Handler struct {
 
 func New(
 	logger infra.Logger,
+	an AnalyticsClient,
 	api *tgbotapi.BotAPI,
 	descs map[string]HelpEntry,
 ) *Handler {
-	return &Handler{logger: logger, api: api, descs: descs}
+	return &Handler{logger: logger, an: an, api: api, descs: descs}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {

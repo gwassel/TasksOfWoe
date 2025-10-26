@@ -22,8 +22,8 @@ type Handler struct {
 	mincutlen int
 }
 
-func New(logger infra.Logger, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
-	return &Handler{logger: logger, api: api, usecase: usecase, maxlen: 50, mincutlen: 30}
+func New(logger infra.Logger, an AnalyticsClient, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
+	return &Handler{logger: logger, an: an, api: api, usecase: usecase, maxlen: 50, mincutlen: 30}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {

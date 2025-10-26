@@ -14,5 +14,5 @@ type Usecase interface {
 }
 
 type AnalyticsClient interface {
-	Write(message analytics.Event) error
+	Write(message analytics.Event)
 }

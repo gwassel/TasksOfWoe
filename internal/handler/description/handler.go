@@ -20,8 +20,8 @@ type Handler struct {
 	usecase Usecase
 }
 
-func New(logger infra.Logger, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
-	return &Handler{logger: logger, api: api, usecase: usecase}
+func New(logger infra.Logger, an AnalyticsClient, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
+	return &Handler{logger: logger, an: an, api: api, usecase: usecase}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {
