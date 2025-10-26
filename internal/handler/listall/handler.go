@@ -3,10 +3,12 @@ package complete
 import (
 	"fmt"
 	"strings"
+	"time"
 	"unicode"
 	"unicode/utf8"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain/analytics"
 	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
@@ -14,6 +16,7 @@ import (
 
 type Handler struct {
 	logger    infra.Logger
+	an        AnalyticsClient
 	api       BotApi
 	usecase   Usecase
 	maxlen    int
@@ -45,6 +48,8 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		h.sendMessage(message.Chat.ID, "You have no tasks, add one")
 		return
 	}
+
+	h.an.Write(analytics.NewEvent(userID, "list all tasks", time.Now()))
 
 	var taskList strings.Builder
 	var (

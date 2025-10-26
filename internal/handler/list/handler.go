@@ -3,16 +3,19 @@ package complete
 import (
 	"fmt"
 	"strings"
+	"time"
 	"unicode"
 	"unicode/utf8"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain/analytics"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
 )
 
 type Handler struct {
 	logger    infra.Logger
+	an        AnalyticsClient
 	api       BotApi
 	usecase   Usecase
 	maxlen    int
@@ -44,6 +47,8 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		h.sendMessage(message.Chat.ID, "You have nothing to do")
 		return
 	}
+
+	h.an.Write(analytics.NewEvent(userID, "list tasks", time.Now()))
 
 	var taskList strings.Builder
 	separatorflag := true

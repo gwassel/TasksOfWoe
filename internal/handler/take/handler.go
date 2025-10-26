@@ -4,14 +4,17 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain/analytics"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
 )
 
 type Handler struct {
 	logger  infra.Logger
+	an      AnalyticsClient
 	api     BotApi
 	usecase Usecase
 }
@@ -50,6 +53,9 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		h.sendMessage(message.Chat.ID, "Unable to update task status.")
 		return
 	}
+
+	h.an.Write(analytics.NewEvent(userID, "toggle task to work", time.Now()))
+
 	h.sendMessage(message.Chat.ID, "Task(s) taken to work.")
 }
 
