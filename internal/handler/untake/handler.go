@@ -54,7 +54,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		return
 	}
 
-	h.an.Write(analytics.NewEvent(userID, "untoggle task to work", time.Now()))
+	h.an.Write(analytics.NewEvent(userID, "untoggle task", time.Now()))
 
 	h.sendMessage(message.Chat.ID, "Suspended work on task(s).")
 }
