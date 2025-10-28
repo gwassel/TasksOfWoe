@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -26,7 +25,6 @@ import (
 	listall_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/listall"
 	take_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/take"
 	untake_usecase "github.com/gwassel/TasksOfWoe/internal/usecase/untake"
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
@@ -35,17 +33,16 @@ import (
 
 func main() {
 	// Read environment variables
-	dbHost := os.Getenv("DB_HOST")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	dbPort := os.Getenv("DB_PORT")
 	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
 	encKey := os.Getenv("ENCRYPTION_KEY")
 
 	// Connect to PostgreSQL
-	connStr := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s",
-		dbHost, dbUser, dbName, dbPassword, dbPort)
+
+	db, err := persistence.NewDB()
+	if err != nil {
+		panic(err.Error())
+	}
+	defer func() { _ = db.Close() }()
 
 	// Initialize Telegram Bot
 	botApi, err := tgbotapi.NewBotAPI(botToken)
@@ -59,12 +56,6 @@ func main() {
 	u.Timeout = 60
 
 	updates := botApi.GetUpdatesChan(u)
-
-	db, err := sqlx.Connect("postgres", connStr)
-	if err != nil {
-		panic(err.Error())
-	}
-	defer func() { _ = db.Close() }()
 
 	config := zap.NewProductionConfig()
 	config.OutputPaths = []string{"/var/log/task-tracker/app.log"}
