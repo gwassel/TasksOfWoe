@@ -3,8 +3,10 @@ package help
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain/analytics"
 	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
@@ -17,16 +19,18 @@ type HelpEntry struct {
 
 type Handler struct {
 	logger infra.Logger
+	an     AnalyticsClient
 	api    BotApi
 	descs  map[string]HelpEntry
 }
 
 func New(
 	logger infra.Logger,
+	an AnalyticsClient,
 	api *tgbotapi.BotAPI,
 	descs map[string]HelpEntry,
 ) *Handler {
-	return &Handler{logger: logger, api: api, descs: descs}
+	return &Handler{logger: logger, an: an, api: api, descs: descs}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {
@@ -54,6 +58,8 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		desc := h.descs[text]
 		helpMessage.WriteString(printFull(desc.Desc))
 	}
+
+	h.an.Write(analytics.NewEvent(message.From.ID, "com task", time.Now()))
 
 	h.sendMessage(message.Chat.ID, helpMessage.String())
 }

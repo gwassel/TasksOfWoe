@@ -3,24 +3,27 @@ package complete
 import (
 	"fmt"
 	"strings"
+	"time"
 	"unicode"
 	"unicode/utf8"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain/analytics"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
 )
 
 type Handler struct {
 	logger    infra.Logger
+	an        AnalyticsClient
 	api       BotApi
 	usecase   Usecase
 	maxlen    int
 	mincutlen int
 }
 
-func New(logger infra.Logger, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
-	return &Handler{logger: logger, api: api, usecase: usecase, maxlen: 50, mincutlen: 30}
+func New(logger infra.Logger, an AnalyticsClient, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
+	return &Handler{logger: logger, an: an, api: api, usecase: usecase, maxlen: 50, mincutlen: 30}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {
@@ -44,6 +47,8 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		h.sendMessage(message.Chat.ID, "You have nothing to do")
 		return
 	}
+
+	h.an.Write(analytics.NewEvent(userID, "list tasks", time.Now()))
 
 	var taskList strings.Builder
 	separatorflag := true

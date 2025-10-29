@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/gwassel/TasksOfWoe/internal/domain/analytics"
 	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 	"github.com/pkg/errors"
@@ -13,12 +15,13 @@ import (
 
 type Handler struct {
 	logger  infra.Logger
+	an      AnalyticsClient
 	api     BotApi
 	usecase Usecase
 }
 
-func New(logger infra.Logger, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
-	return &Handler{logger: logger, api: api, usecase: usecase}
+func New(logger infra.Logger, an AnalyticsClient, api *tgbotapi.BotAPI, usecase Usecase) *Handler {
+	return &Handler{logger: logger, an: an, api: api, usecase: usecase}
 }
 
 func (h *Handler) sendMessage(chatID int64, text string) {
@@ -55,6 +58,8 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		return
 	}
 
+	h.an.Write(analytics.NewEvent(userID, "desc task", time.Now()))
+
 	for _, task := range tasks {
 		var taskDesc strings.Builder
 
@@ -72,6 +77,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 			createdAt = "(date unknown)"
 		}
 		taskDesc.WriteString(fmt.Sprintf("Created %s\n", createdAt))
+
 		switch status {
 		case domain.Incomplete:
 			taskDesc.WriteString(status.ToString())
