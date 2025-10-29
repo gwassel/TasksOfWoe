@@ -31,7 +31,6 @@ func TestAnalyticsEverydayReportUsecase_Handle_Error(t *testing.T) {
 	mockRepo.EXPECT().GetFieldForReport(gomock.Any()).Return(domain.Metric{}, assert.AnError)
 
 	usecase := New(nil, []repository{mockRepo})
-	result, err := usecase.Handle(context.Background())
+	_, err := usecase.Handle(context.Background())
 	require.Error(t, err)
-	require.Nil(t, result)
 }

@@ -27,7 +27,9 @@ func TestDescriptionUsecase_Handle_Error(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockTaskRepo(ctrl)
-	mockRepo.EXPECT().TaskDescription(int64(1), []int64{101}).Return([]domain.Task{}, assert.AnError)
+	mockRepo.EXPECT().
+		TaskDescription(int64(1), []int64{101}).
+		Return([]domain.Task{}, assert.AnError)
 
 	usecase := New(nil, mockRepo)
 	tasks, err := usecase.Handle(int64(1), []int64{101})
