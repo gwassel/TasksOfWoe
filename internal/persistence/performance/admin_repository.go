@@ -25,19 +25,10 @@ func NewAdminRepository(db *sqlx.DB) AdminRepository {
 func (r *adminRepository) GetAdminUsers(ctx context.Context) ([]int64, error) {
 	query := `SELECT telegram_user_id FROM admin_users ORDER BY registered_at`
 
-	rows, err := r.db.QueryContext(ctx, query)
+	var adminIDs []int64
+	err := r.db.SelectContext(ctx, &adminIDs, query)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting admin users")
-	}
-	defer rows.Close()
-
-	var adminIDs []int64
-	for rows.Next() {
-		var id int64
-		if err := rows.Scan(&id); err != nil {
-			return nil, errors.Wrap(err, "scanning admin user id")
-		}
-		adminIDs = append(adminIDs, id)
 	}
 
 	return adminIDs, nil

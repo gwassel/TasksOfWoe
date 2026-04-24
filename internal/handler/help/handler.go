@@ -67,9 +67,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 func printShort(d domain.Description) string {
 	var text strings.Builder
 
-	text.WriteString(
-		fmt.Sprintf("*%s*", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.Name)),
-	)
+	fmt.Fprintf(&text, "*%s*", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.Name))
 	if d.Aliases != nil {
 		text.WriteString(` \(_`)
 		for _, alias := range d.Aliases {
@@ -91,9 +89,7 @@ func printFull(d domain.Description) string {
 
 	var text strings.Builder
 
-	text.WriteString(
-		fmt.Sprintf("*%s*", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.Name)),
-	)
+	fmt.Fprintf(&text, "*%s*", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.Name))
 	if d.Aliases != nil {
 		text.WriteString(` \(_`)
 		for _, alias := range d.Aliases {
@@ -105,9 +101,7 @@ func printFull(d domain.Description) string {
 		` \- ` + tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.DescFull) + "\n",
 	)
 
-	text.WriteString(
-		fmt.Sprintf("usage: `%s`\n", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.Format)),
-	)
+	fmt.Fprintf(&text, "usage: `%s`\n", tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, d.Format))
 	for _, arg := range d.Args {
 		text.WriteString(tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, arg))
 	}

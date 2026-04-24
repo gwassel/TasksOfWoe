@@ -131,22 +131,12 @@ func (r *repository) GetSlowestRequests(
 		WHERE timestamp >= $1 AND timestamp <= $2
 		ORDER BY duration_ms DESC
 		LIMIT $3
-	`
-
-	rows, err := r.db.QueryContext(ctx, query, startTime, endTime, limit)
-	if err != nil {
-		return nil, errors.Wrap(err, "getting slowest requests")
-	}
-	defer rows.Close()
+ `
 
 	var metrics []performance.HandlerMetric
-	for rows.Next() {
-		var m performance.HandlerMetric
-		err := rows.Scan(&m.UserID, &m.HandlerName, &m.Command, &m.DurationMs, &m.Timestamp)
-		if err != nil {
-			return nil, errors.Wrap(err, "scanning slowest request")
-		}
-		metrics = append(metrics, m)
+	err := r.db.SelectContext(ctx, &metrics, query, startTime, endTime, limit)
+	if err != nil {
+		return nil, errors.Wrap(err, "getting slowest requests")
 	}
 
 	return metrics, nil
@@ -165,22 +155,12 @@ func (r *repository) GetPercentiles(
 			AND timestamp >= $2 
 			AND timestamp <= $3
 		ORDER BY duration_ms
-	`
-
-	rows, err := r.db.QueryContext(ctx, query, handlerName, startTime, endTime)
-	if err != nil {
-		return performance.PercentileStats{}, errors.Wrap(err, "getting durations for percentiles")
-	}
-	defer rows.Close()
+ 	`
 
 	var durations []int64
-	for rows.Next() {
-		var d int64
-		err := rows.Scan(&d)
-		if err != nil {
-			return performance.PercentileStats{}, errors.Wrap(err, "scanning duration")
-		}
-		durations = append(durations, d)
+	err := r.db.SelectContext(ctx, &durations, query, handlerName, startTime, endTime)
+	if err != nil {
+		return performance.PercentileStats{}, errors.Wrap(err, "getting durations for percentiles")
 	}
 
 	if len(durations) == 0 {
@@ -207,24 +187,33 @@ func (r *repository) GetAllHandlerStats(
 		WHERE timestamp >= $1 AND timestamp <= $2
 		GROUP BY handler_name
 		ORDER BY total_requests DESC
-	`
+ `
 
-	rows, err := r.db.QueryContext(ctx, query, startTime, endTime)
+	type handlerStatsRow struct {
+		HandlerName     string  `db:"handler_name"`
+		TotalRequests   int64   `db:"total_requests"`
+		AverageDuration float64 `db:"avg_duration"`
+		MinDuration     int64   `db:"min_duration"`
+		MaxDuration     int64   `db:"max_duration"`
+		TotalDuration   int64   `db:"total_duration"`
+	}
+
+	var rows []handlerStatsRow
+	err := r.db.SelectContext(ctx, &rows, query, startTime, endTime)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting all handler stats")
 	}
-	defer rows.Close()
 
 	stats := make(map[string]performance.HandlerStats)
-	for rows.Next() {
-		var handlerName string
-		var hstats performance.HandlerStats
-		err := rows.Scan(&handlerName, &hstats.TotalRequests, &hstats.AverageDuration,
-			&hstats.MinDuration, &hstats.MaxDuration, &hstats.TotalDuration)
-		if err != nil {
-			return nil, errors.Wrap(err, "scanning handler stats")
+	for _, row := range rows {
+		hstats := performance.HandlerStats{
+			TotalRequests:   row.TotalRequests,
+			AverageDuration: row.AverageDuration,
+			MinDuration:     row.MinDuration,
+			MaxDuration:     row.MaxDuration,
+			TotalDuration:   row.TotalDuration,
 		}
-		stats[handlerName] = hstats
+		stats[row.HandlerName] = hstats
 	}
 
 	return stats, nil

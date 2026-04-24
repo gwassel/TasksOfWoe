@@ -51,17 +51,17 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 	h.an.Write(analytics.NewEvent(userID, "list tasks", time.Now()))
 
 	var taskList strings.Builder
-	separatorflag := true
+	separatorFlag := true
 
 	for _, task := range tasks {
 		if task.InWork {
-			taskList.WriteString(fmt.Sprintf("%d*. ", task.UserTaskID))
+			fmt.Fprintf(&taskList, "%d*. ", task.UserTaskID)
 		} else {
-			if separatorflag {
-				separatorflag = false
+			if separatorFlag {
+				separatorFlag = false
 				taskList.WriteString("\n")
 			}
-			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
+			fmt.Fprintf(&taskList, "%d. ", task.UserTaskID)
 		}
 
 		if utf8.RuneCountInString(task.Task) > h.maxlen {
@@ -70,9 +70,9 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		}
 
 		if strings.Contains(task.Task, "\n") {
-			taskList.WriteString(fmt.Sprintf("\"%s\"\n", task.Task))
+			fmt.Fprintf(&taskList, "\"%s\"\n", task.Task)
 		} else {
-			taskList.WriteString(fmt.Sprintf("%s\n", task.Task))
+			fmt.Fprintf(&taskList, "%s\n", task.Task)
 		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())
