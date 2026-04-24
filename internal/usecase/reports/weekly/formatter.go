@@ -12,31 +12,28 @@ func FormatWeeklyReport(report performance.PerformanceReport) string {
 	var builder strings.Builder
 
 	endWeek := report.Date.AddDate(0, 0, 6)
-	builder.WriteString(fmt.Sprintf("📅 *Weekly Performance Report*\n"))
-	builder.WriteString(
-		fmt.Sprintf(
-			"_%s to %s_\n\n",
-			report.Date.Format("2006-01-02"),
-			endWeek.Format("2006-01-02"),
-		),
+	builder.WriteString("📅 *Weekly Performance Report*\n")
+	fmt.Fprintf(
+		&builder,
+		"_%s to %s_\n\n",
+		report.Date.Format("2006-01-02"),
+		endWeek.Format("2006-01-02"),
 	)
 
 	// Overall system stats
 	builder.WriteString("*🎯 System Overview*\n")
-	builder.WriteString(fmt.Sprintf("Total Requests: `%d`\n", report.TotalRequests))
+	fmt.Fprintf(&builder, "Total Requests: `%d`\n", report.TotalRequests)
 	if report.TotalRequests > 0 {
-		builder.WriteString(
-			fmt.Sprintf("Average Response Time: `%.2fms`\n\n", report.AverageSystemTime),
-		)
+		fmt.Fprintf(&builder, "Average Response Time: `%.2fms`\n\n", report.AverageSystemTime)
 
 		// Calculate daily average
 		dailyAvg := float64(report.TotalRequests) / 7
-		builder.WriteString(fmt.Sprintf("Avg Requests/Day: `%.1f`\n\n", dailyAvg))
+		fmt.Fprintf(&builder, "Avg Requests/Day: `%.1f`\n\n", dailyAvg)
 	}
 
 	// Handler statistics sorted by total requests
 	handlerCount := len(report.HandlerStats)
-	builder.WriteString(fmt.Sprintf("*📈 Handler Statistics* (%d handlers)\n", handlerCount))
+	fmt.Fprintf(&builder, "*📈 Handler Statistics* (%d handlers)\n", handlerCount)
 
 	sortedHandlers := make([]string, 0, len(report.HandlerStats))
 	for handlerName := range report.HandlerStats {
@@ -45,15 +42,15 @@ func FormatWeeklyReport(report performance.PerformanceReport) string {
 
 	for _, handlerName := range sortedHandlers {
 		stats := report.HandlerStats[handlerName]
-		builder.WriteString(fmt.Sprintf("• *%s*: `%d` requests, `%.2fms` avg",
-			handlerName, stats.TotalRequests, stats.AverageDuration))
+		fmt.Fprintf(&builder, "• *%s*: `%d` requests, `%.2fms` avg",
+			handlerName, stats.TotalRequests, stats.AverageDuration)
 
 		if trend, ok := report.Trends[handlerName]; ok {
 			switch trend.Direction {
 			case "up":
-				builder.WriteString(fmt.Sprintf(" 🔺%.1f%%", trend.Change))
+				fmt.Fprintf(&builder, " 🔺%.1f%%", trend.Change)
 			case "down":
-				builder.WriteString(fmt.Sprintf(" 🔻%.1f%%", trend.Change))
+				fmt.Fprintf(&builder, " 🔻%.1f%%", trend.Change)
 			}
 		}
 		builder.WriteString("\n")
@@ -74,7 +71,7 @@ func FormatWeeklyReport(report performance.PerformanceReport) string {
 	if len(anomalousHandlers) > 0 {
 		builder.WriteString("*⚠️ Anomalies Detected*\n")
 		for _, anom := range anomalousHandlers {
-			builder.WriteString(fmt.Sprintf("• %s\n", anom))
+			fmt.Fprintf(&builder, "• %s\n", anom)
 		}
 		builder.WriteString("\n")
 	}
@@ -85,11 +82,9 @@ func FormatWeeklyReport(report performance.PerformanceReport) string {
 
 	for _, handlerName := range top5Handlers {
 		if p, ok := report.Percentiles[handlerName]; ok {
-			builder.WriteString(fmt.Sprintf("*%s*:\n", handlerName))
-			builder.WriteString(
-				fmt.Sprintf("```\nP50: %.1fms\nP90: %.1fms\nP95: %.1fms\nP99: %.1fms```\n\n",
-					p.P50, p.P90, p.P95, p.P99),
-			)
+			fmt.Fprintf(&builder, "*%s*:\n", handlerName)
+			fmt.Fprintf(&builder, "```\nP50: %.1fms\nP90: %.1fms\nP95: %.1fms\nP99: %.1fms```\n\n",
+				p.P50, p.P90, p.P95, p.P99)
 		}
 	}
 
@@ -98,8 +93,8 @@ func FormatWeeklyReport(report performance.PerformanceReport) string {
 		builder.WriteString("*🐌 Slowest Requests (Top 10)*\n")
 		for i := 0; i < min(len(report.SlowestRequests), 10); i++ {
 			req := report.SlowestRequests[i]
-			builder.WriteString(fmt.Sprintf("%d. `%s` - `%dms` (User: %d, %s)\n",
-				i+1, req.Command, req.DurationMs, req.UserID, req.Timestamp.Format("15:04")))
+			fmt.Fprintf(&builder, "%d. `%s` - `%dms` (User: %d, %s)\n",
+				i+1, req.Command, req.DurationMs, req.UserID, req.Timestamp.Format("15:04"))
 		}
 		builder.WriteString("\n")
 	}

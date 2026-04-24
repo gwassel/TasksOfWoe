@@ -53,29 +53,29 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 
 	var taskList strings.Builder
 	var (
-		separatorflag1 = true
-		separatorflag2 = true
+		separatorFlag1 = true
+		separatorFlag2 = true
 	)
 
 	for _, task := range tasks {
 		status := task.Status()
 		switch status {
 		case domain.Working:
-			taskList.WriteString(fmt.Sprintf("%d*. ", task.UserTaskID))
+			fmt.Fprintf(&taskList, "%d*. ", task.UserTaskID)
 
 		case domain.Incomplete:
-			if separatorflag1 {
-				separatorflag1 = false
+			if separatorFlag1 {
+				separatorFlag1 = false
 				taskList.WriteString("\n")
 			}
-			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
+			fmt.Fprintf(&taskList, "%d. ", task.UserTaskID)
 
 		case domain.Completed:
-			if separatorflag2 {
-				separatorflag2 = false
+			if separatorFlag2 {
+				separatorFlag2 = false
 				taskList.WriteString("\n")
 			}
-			taskList.WriteString(fmt.Sprintf("%d. ", task.UserTaskID))
+			fmt.Fprintf(&taskList, "%d. ", task.UserTaskID)
 		}
 
 		if utf8.RuneCountInString(task.Task) > h.maxlen {
@@ -84,9 +84,9 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		}
 
 		if strings.Contains(task.Task, "\n") {
-			taskList.WriteString(fmt.Sprintf("\"%s\" [%s]\n", task.Task, status.ToString()))
+			fmt.Fprintf(&taskList, "\"%s\" [%s]\n", task.Task, status.ToString())
 		} else {
-			taskList.WriteString(fmt.Sprintf("%s [%s]\n", task.Task, status.ToString()))
+			fmt.Fprintf(&taskList, "%s [%s]\n", task.Task, status.ToString())
 		}
 	}
 	h.sendMessage(message.Chat.ID, taskList.String())

@@ -32,15 +32,15 @@ func (r *repository) AddTask(userID int64, task []byte) (int64, error) {
 	}
 	query = fmt.Sprintf("-- %s\n%s", op, query)
 
-	result, err := r.db.QueryContext(context.TODO(), query, args...)
+	rows, err := r.db.QueryxContext(context.TODO(), query, args...)
 	if err != nil {
 		return 0, errors.Wrapf(err, "failed to exec query '%s'", query)
 	}
-	defer func() { _ = result.Close() }()
+	defer func() { _ = rows.Close() }()
 
 	var userTaskID int64
-	for result.Next() {
-		err = result.Scan(&userTaskID)
+	if rows.Next() {
+		err = rows.Scan(&userTaskID)
 		if err != nil {
 			return 0, errors.Wrapf(err, "failed to retrieve task ID")
 		}

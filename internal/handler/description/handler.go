@@ -65,18 +65,18 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 
 		status := task.Status()
 
-		taskDesc.WriteString(fmt.Sprintf("%d", task.UserTaskID))
+		fmt.Fprintf(&taskDesc, "%d", task.UserTaskID)
 		if status == domain.Working {
 			taskDesc.WriteString("*")
 		}
 
-		taskDesc.WriteString(fmt.Sprintf(". %s\n\n", task.Task))
+		fmt.Fprintf(&taskDesc, ". %s\n\n", task.Task)
 		createdAt, err := domain.FormatDateForTask(task.CreatedAt)
 		if err != nil {
 			h.logger.Error(err)
 			createdAt = "(date unknown)"
 		}
-		taskDesc.WriteString(fmt.Sprintf("Created %s\n", createdAt))
+		fmt.Fprintf(&taskDesc, "Created %s\n", createdAt)
 
 		switch status {
 		case domain.Incomplete:
@@ -88,7 +88,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 				h.logger.Error(err)
 				takenAt = "(date unknown)"
 			}
-			taskDesc.WriteString(fmt.Sprintf("%s since %s", status.ToString(), takenAt))
+			fmt.Fprintf(&taskDesc, "%s since %s", status.ToString(), takenAt)
 
 		case domain.Completed:
 			completedAt, err := domain.FormatDateForTask(*task.CompletedAt)
@@ -96,7 +96,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 				h.logger.Error(err)
 				completedAt = "(date unknown)"
 			}
-			taskDesc.WriteString(fmt.Sprintf("%s %s", status.ToString(), completedAt))
+			fmt.Fprintf(&taskDesc, "%s %s", status.ToString(), completedAt)
 		}
 		h.sendMessage(message.Chat.ID, taskDesc.String())
 	}

@@ -11,34 +11,28 @@ import (
 func FormatReport(report performance.PerformanceReport) string {
 	var builder strings.Builder
 
-	builder.WriteString(
-		fmt.Sprintf("📊 *Performance Report* (%s)\n", report.Date.Format("2006-01-02")),
-	)
-	builder.WriteString(fmt.Sprintf("_Period: %s_\n\n", report.Period))
+	fmt.Fprintf(&builder, "📊 *Performance Report* (%s)\n", report.Date.Format("2006-01-02"))
+	fmt.Fprintf(&builder, "_Period: %s_\n\n", report.Period)
 
 	// Overall system stats
 	builder.WriteString("*🎯 System Overview*\n")
-	builder.WriteString(fmt.Sprintf("Total Requests: `%d`\n", report.TotalRequests))
+	fmt.Fprintf(&builder, "Total Requests: `%d`\n", report.TotalRequests)
 	if report.TotalRequests > 0 {
-		builder.WriteString(
-			fmt.Sprintf("Average Response Time: `%.2fms`\n\n", report.AverageSystemTime),
-		)
+		fmt.Fprintf(&builder, "Average Response Time: `%.2fms`\n\n", report.AverageSystemTime)
 	}
 
 	// Handler statistics
 	builder.WriteString("*📈 Handler Statistics*\n")
-	handlerCount := 0
 	for handlerName, stats := range report.HandlerStats {
-		handlerCount++
-		builder.WriteString(fmt.Sprintf("• *%s*: `%d` requests, `%.2fms` avg",
-			handlerName, stats.TotalRequests, stats.AverageDuration))
+		fmt.Fprintf(&builder, "• *%s*: `%d` requests, `%.2fms` avg",
+			handlerName, stats.TotalRequests, stats.AverageDuration)
 
 		if trend, ok := report.Trends[handlerName]; ok {
 			switch trend.Direction {
 			case "up":
-				builder.WriteString(fmt.Sprintf(" 🔺%.1f%%", trend.Change))
+				fmt.Fprintf(&builder, " 🔺%.1f%%", trend.Change)
 			case "down":
-				builder.WriteString(fmt.Sprintf(" 🔻%.1f%%", trend.Change))
+				fmt.Fprintf(&builder, " 🔻%.1f%%", trend.Change)
 			}
 		}
 		builder.WriteString("\n")
@@ -48,16 +42,15 @@ func FormatReport(report performance.PerformanceReport) string {
 	// Percentiles
 	builder.WriteString("*⚡ Performance Percentiles*\n")
 	for handlerName, p := range report.Percentiles {
-		builder.WriteString(fmt.Sprintf("*%s*:\n", handlerName))
-		builder.WriteString(
-			fmt.Sprintf(
-				"```\nP50: %.1fms\nP75: %.1fms\nP90: %.1fms\nP95: %.1fms\nP99: %.1fms```\n\n",
-				p.P50,
-				p.P75,
-				p.P90,
-				p.P95,
-				p.P99,
-			),
+		fmt.Fprintf(&builder, "*%s*:\n", handlerName)
+		fmt.Fprintf(
+			&builder,
+			"```\nP50: %.1fms\nP75: %.1fms\nP90: %.1fms\nP95: %.1fms\nP99: %.1fms```\n\n",
+			p.P50,
+			p.P75,
+			p.P90,
+			p.P95,
+			p.P99,
 		)
 	}
 
@@ -65,8 +58,8 @@ func FormatReport(report performance.PerformanceReport) string {
 	if len(report.SlowestRequests) > 0 {
 		builder.WriteString("*🐌 Slowest Requests*\n")
 		for i, req := range report.SlowestRequests {
-			builder.WriteString(fmt.Sprintf("%d. `%s` - `%dms` (User: %d)\n",
-				i+1, req.Command, req.DurationMs, req.UserID))
+			fmt.Fprintf(&builder, "%d. `%s` - `%dms` (User: %d)\n",
+				i+1, req.Command, req.DurationMs, req.UserID)
 		}
 		builder.WriteString("\n")
 	}
