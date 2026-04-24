@@ -1,6 +1,8 @@
 package encoder
 
 import (
+	"context"
+
 	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/pkg/errors"
 )
@@ -18,10 +20,11 @@ func New(
 }
 
 func (es *encoderService) TaskDescription(
+	ctx context.Context,
 	userID int64,
 	userTaskIDs []int64,
 ) ([]domain.Task, error) {
-	tasks, err := es.taskRepository.TaskDescription(userID, userTaskIDs)
+	tasks, err := es.taskRepository.TaskDescription(ctx, userID, userTaskIDs)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to get task description")
 	}

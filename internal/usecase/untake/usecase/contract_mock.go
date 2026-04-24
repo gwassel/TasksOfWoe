@@ -10,6 +10,7 @@
 package usecase
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"
@@ -40,15 +41,15 @@ func (m *MockTaskRepo) EXPECT() *MockTaskRepoMockRecorder {
 }
 
 // UntakeTask mocks base method.
-func (m *MockTaskRepo) UntakeTask(userID int64, taskIDs []int64) error {
+func (m *MockTaskRepo) UntakeTask(ctx context.Context, userID int64, taskIDs []int64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UntakeTask", userID, taskIDs)
+	ret := m.ctrl.Call(m, "UntakeTask", ctx, userID, taskIDs)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UntakeTask indicates an expected call of UntakeTask.
-func (mr *MockTaskRepoMockRecorder) UntakeTask(userID, taskIDs any) *gomock.Call {
+func (mr *MockTaskRepoMockRecorder) UntakeTask(ctx, userID, taskIDs any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UntakeTask", reflect.TypeOf((*MockTaskRepo)(nil).UntakeTask), userID, taskIDs)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UntakeTask", reflect.TypeOf((*MockTaskRepo)(nil).UntakeTask), ctx, userID, taskIDs)
 }

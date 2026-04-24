@@ -17,7 +17,7 @@ func New(db *sqlx.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) AddTask(userID int64, task []byte) (int64, error) {
+func (r *repository) AddTask(ctx context.Context, userID int64, task []byte) (int64, error) {
 	op := "insert task"
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
@@ -33,7 +33,7 @@ func (r *repository) AddTask(userID int64, task []byte) (int64, error) {
 	query = fmt.Sprintf("-- %s\n%s", op, query)
 
 	var userTaskID int64
-	err = r.db.GetContext(context.TODO(), &userTaskID, query, args...)
+	err = r.db.GetContext(ctx, &userTaskID, query, args...)
 	if err != nil {
 		return 0, errors.Wrapf(err, "failed to retrieve task ID '%s'", query)
 	}

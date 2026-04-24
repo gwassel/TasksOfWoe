@@ -1,7 +1,9 @@
 package encoder
 
+import "context"
+
 type TasksRepository interface {
-	AddTask(userID int64, task []byte) (int64, error)
+	AddTask(ctx context.Context, userID int64, task []byte) (int64, error)
 }
 
 type Encoder interface {

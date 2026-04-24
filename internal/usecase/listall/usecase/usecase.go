@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+
 	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/pkg/errors"
 )
@@ -22,8 +24,8 @@ func New(taskRepo TaskRepo) *Usecase {
 	return &Usecase{taskRepo: taskRepo, Desc: desc}
 }
 
-func (u *Usecase) Handle(userID int64) ([]domain.Task, error) {
-	tasks, err := u.taskRepo.ListAllTasks(userID)
+func (u *Usecase) Handle(ctx context.Context, userID int64) ([]domain.Task, error) {
+	tasks, err := u.taskRepo.ListAllTasks(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "Unable to get all tasks")
 	}

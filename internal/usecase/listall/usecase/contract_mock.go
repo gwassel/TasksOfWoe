@@ -10,6 +10,7 @@
 package usecase
 
 import (
+	context "context"
 	reflect "reflect"
 
 	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
@@ -41,16 +42,16 @@ func (m *MockTaskRepo) EXPECT() *MockTaskRepoMockRecorder {
 }
 
 // ListAllTasks mocks base method.
-func (m *MockTaskRepo) ListAllTasks(userID int64) ([]domain.Task, error) {
+func (m *MockTaskRepo) ListAllTasks(ctx context.Context, userID int64) ([]domain.Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListAllTasks", userID)
+	ret := m.ctrl.Call(m, "ListAllTasks", ctx, userID)
 	ret0, _ := ret[0].([]domain.Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListAllTasks indicates an expected call of ListAllTasks.
-func (mr *MockTaskRepoMockRecorder) ListAllTasks(userID any) *gomock.Call {
+func (mr *MockTaskRepoMockRecorder) ListAllTasks(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllTasks", reflect.TypeOf((*MockTaskRepo)(nil).ListAllTasks), userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllTasks", reflect.TypeOf((*MockTaskRepo)(nil).ListAllTasks), ctx, userID)
 }

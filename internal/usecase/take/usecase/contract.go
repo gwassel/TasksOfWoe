@@ -2,6 +2,8 @@
 
 package usecase
 
+import "context"
+
 type TaskRepo interface {
-	TakeTask(userID int64, taskIDs []int64) error
+	TakeTask(ctx context.Context, userID int64, taskIDs []int64) error
 }
