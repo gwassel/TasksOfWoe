@@ -15,7 +15,14 @@ type Bot struct {
 	handlersMap map[string]interface {
 		Handle(message *tgbotapi.Message)
 	}
+	middlewares []Middleware
 }
+
+type Middleware interface {
+	Handle(message *tgbotapi.Message, next func(message *tgbotapi.Message))
+}
+
+type HandlerFunc func(message *tgbotapi.Message)
 
 func NewBot(
 	api *tgbotapi.BotAPI,
@@ -24,48 +31,78 @@ func NewBot(
 		Handle(message *tgbotapi.Message)
 	},
 ) *Bot {
-	return &Bot{API: api, logger: logger, handlersMap: handlersMap}
+	return &Bot{API: api, logger: logger, handlersMap: handlersMap, middlewares: []Middleware{}}
+}
+
+func (b *Bot) AddMiddleware(middleware Middleware) {
+	b.middlewares = append(b.middlewares, middleware)
 }
 
 func (b *Bot) HandleMessage(message *tgbotapi.Message) {
 	text := message.Text
+	if text == "" {
+		return
+	}
+
+	var handlerFunc HandlerFunc
 
 	switch {
 	case strings.HasPrefix(text, "add"):
-		b.handlersMap["add"].Handle(message)
-
+		handlerFunc = b.handlersMap["add"].Handle
 	case text == "ls":
 		fallthrough
 	case text == "list":
 		fmt.Println(text)
-		b.handlersMap["list"].Handle(message)
-
+		handlerFunc = b.handlersMap["list"].Handle
 	case text == "la":
 		fallthrough
 	case text == "listall":
-		b.handlersMap["listall"].Handle(message)
-
+		handlerFunc = b.handlersMap["listall"].Handle
 	case strings.HasPrefix(text, "com"):
-		b.handlersMap["com"].Handle(message)
-
+		handlerFunc = b.handlersMap["com"].Handle
 	case strings.HasPrefix(text, "take"):
-		b.handlersMap["take"].Handle(message)
-
+		handlerFunc = b.handlersMap["take"].Handle
 	case strings.HasPrefix(text, "untake"):
-		b.handlersMap["untake"].Handle(message)
-
+		handlerFunc = b.handlersMap["untake"].Handle
 	case strings.HasPrefix(text, "desc"):
-		b.handlersMap["desc"].Handle(message)
-
+		handlerFunc = b.handlersMap["desc"].Handle
 	case strings.HasPrefix(text, "help"):
-		b.handlersMap["help"].Handle(message)
-
+		handlerFunc = b.handlersMap["help"].Handle
+	case strings.HasPrefix(text, "/"):
+		handlerFunc = b.handlersMap["admin"].Handle
 	default:
 		b.SendMessage(
 			message.Chat.ID,
 			`Unknown command\. Type \"help\" to see the list of available commands\.`,
 		)
+		return
 	}
+
+	if handlerFunc != nil {
+		b.executeMiddlewareChain(message, handlerFunc)
+	}
+}
+
+func (b *Bot) executeMiddlewareChain(message *tgbotapi.Message, handlerFunc HandlerFunc) {
+	if len(b.middlewares) == 0 {
+		handlerFunc(message)
+		return
+	}
+
+	currentIndex := 0
+	var next func(msg *tgbotapi.Message)
+
+	next = func(msg *tgbotapi.Message) {
+		if currentIndex < len(b.middlewares) {
+			middleware := b.middlewares[currentIndex]
+			currentIndex++
+			middleware.Handle(msg, next)
+		} else {
+			handlerFunc(msg)
+		}
+	}
+
+	next(message)
 }
 
 func (b *Bot) SendMessage(chatID int64, text string) {
@@ -73,6 +110,6 @@ func (b *Bot) SendMessage(chatID int64, text string) {
 	msg.ParseMode = tgbotapi.ModeMarkdownV2
 	_, err := b.API.Send(msg)
 	if err != nil {
-		b.logger.Error(errors.Wrap(err, "unable to send message"))
+		b.logger.Error(errors.Wrap(err, "unable to send message").Error())
 	}
 }
