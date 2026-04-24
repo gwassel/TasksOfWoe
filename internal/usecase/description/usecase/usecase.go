@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+
 	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/gwassel/TasksOfWoe/internal/infra"
 )
@@ -23,8 +25,12 @@ func New(logger infra.Logger, taskRepo TaskRepo) *Usecase {
 	return &Usecase{logger: logger, taskRepo: taskRepo, Desc: desc}
 }
 
-func (u *Usecase) Handle(userID int64, userTaskIDs []int64) ([]domain.Task, error) {
-	tasks, err := u.taskRepo.TaskDescription(userID, userTaskIDs)
+func (u *Usecase) Handle(
+	ctx context.Context,
+	userID int64,
+	userTaskIDs []int64,
+) ([]domain.Task, error) {
+	tasks, err := u.taskRepo.TaskDescription(ctx, userID, userTaskIDs)
 	if err != nil {
 		return nil, err
 	}

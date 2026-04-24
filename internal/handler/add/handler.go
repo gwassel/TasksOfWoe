@@ -1,6 +1,7 @@
 package add
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -31,6 +32,9 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 }
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	userID := message.From.ID
 	text := message.Text
 
@@ -39,7 +43,7 @@ func (h *Handler) Handle(message *tgbotapi.Message) {
 		h.sendMessage(message.Chat.ID, "Please provide a task description.")
 		return
 	}
-	userTaskID, err := h.usecase.Handle(userID, task)
+	userTaskID, err := h.usecase.Handle(ctx, userID, task)
 	if err != nil {
 		h.logger.Error(err)
 		h.sendMessage(message.Chat.ID, "Failed to add task.")

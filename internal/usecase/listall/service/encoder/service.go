@@ -1,6 +1,8 @@
 package encoder
 
 import (
+	"context"
+
 	domain "github.com/gwassel/TasksOfWoe/internal/domain/task"
 	"github.com/pkg/errors"
 )
@@ -20,8 +22,8 @@ func New(
 	}
 }
 
-func (es *EncoderService) ListAllTasks(userID int64) ([]domain.Task, error) {
-	tasks, err := es.taskRepo.ListAllTasks(userID)
+func (es *EncoderService) ListAllTasks(ctx context.Context, userID int64) ([]domain.Task, error) {
+	tasks, err := es.taskRepo.ListAllTasks(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to list tasks")
 	}

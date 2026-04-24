@@ -1,6 +1,8 @@
 package encoder
 
 import (
+	"context"
+
 	"github.com/pkg/errors"
 )
 
@@ -19,13 +21,13 @@ func New(
 	}
 }
 
-func (es *EncoderService) AddTask(userID int64, task string) (int64, error) {
+func (es *EncoderService) AddTask(ctx context.Context, userID int64, task string) (int64, error) {
 	ciphertext, err := es.encoder.Encode(task)
 	if err != nil {
 		return 0, errors.Wrap(err, "Failed to encode task")
 	}
 
-	userTaskID, err := es.taskRepo.AddTask(userID, ciphertext)
+	userTaskID, err := es.taskRepo.AddTask(ctx, userID, ciphertext)
 	if err != nil {
 		return 0, errors.Wrap(err, "Faield to add task")
 	}

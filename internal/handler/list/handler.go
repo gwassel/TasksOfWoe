@@ -1,6 +1,7 @@
 package list
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -35,9 +36,12 @@ func (h *Handler) sendMessage(chatID int64, text string) {
 }
 
 func (h *Handler) Handle(message *tgbotapi.Message) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	userID := message.From.ID
 
-	tasks, err := h.usecase.Handle(userID)
+	tasks, err := h.usecase.Handle(ctx, userID)
 	if err != nil {
 		h.logger.Error(err)
 		h.sendMessage(message.Chat.ID, "Unable to list tasks.")

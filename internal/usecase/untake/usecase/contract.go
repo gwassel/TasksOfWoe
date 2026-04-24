@@ -2,6 +2,8 @@
 
 package usecase
 
+import "context"
+
 type TaskRepo interface {
-	UntakeTask(userID int64, taskIDs []int64) error
+	UntakeTask(ctx context.Context, userID int64, taskIDs []int64) error
 }

@@ -18,7 +18,11 @@ func New(db *sqlx.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) TaskDescription(userID int64, userTaskIDs []int64) ([]domain.Task, error) {
+func (r *repository) TaskDescription(
+	ctx context.Context,
+	userID int64,
+	userTaskIDs []int64,
+) ([]domain.Task, error) {
 	op := "print task description"
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).
@@ -36,7 +40,7 @@ func (r *repository) TaskDescription(userID int64, userTaskIDs []int64) ([]domai
 	query = fmt.Sprintf("-- %s\n%s", op, query)
 
 	var tasks []domain.Task
-	err = r.db.SelectContext(context.TODO(), &tasks, query, args...)
+	err = r.db.SelectContext(ctx, &tasks, query, args...)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to exec query '%s'", query)
 	}
