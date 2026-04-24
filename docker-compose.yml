@@ -5,9 +5,9 @@ services:
     image: postgres:18-alpine
     container_name: task_tracker_db
     environment:
-      POSTGRES_USER: youruser
-      POSTGRES_PASSWORD: yourpassword
-      POSTGRES_DB: task_tracker
+      POSTGRES_USER: ${POSTGRES_USER:-task_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-task_password}
+      POSTGRES_DB: ${POSTGRES_DB:-task_tracker}
     ports:
       - "5432:5432"
     volumes:
@@ -20,13 +20,13 @@ services:
       - db
     environment:
       DB_HOST: db
-      DB_USER: youruser
-      DB_PASSWORD: yourpassword
-      DB_NAME: task_tracker
+      DB_USER: ${POSTGRES_USER:-task_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-task_password}
+      DB_NAME: ${POSTGRES_DB:-task_tracker}
       DB_PORT: 5432
     volumes:
       - ./migrations:/migrations
-    command: ["-path", "/migrations", "-database", "postgres://youruser:yourpassword@db:5432/task_tracker?sslmode=disable", "up"]
+    command: ["-path", "/migrations", "-database", "postgres://${POSTGRES_USER:-task_user}:${POSTGRES_PASSWORD:-task_password}@db:5432/${POSTGRES_DB:-task_tracker}?sslmode=disable", "up"]
 
   app:
     build: .
@@ -36,9 +36,9 @@ services:
       - migrate
     environment:
       DB_HOST: db
-      DB_USER: youruser
-      DB_PASSWORD: yourpassword
-      DB_NAME: task_tracker
+      DB_USER: ${POSTGRES_USER:-task_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-task_password}
+      DB_NAME: ${POSTGRES_DB:-task_tracker}
       DB_PORT: 5432
       TELEGRAM_BOT_TOKEN: ${TGBOTAPI}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}

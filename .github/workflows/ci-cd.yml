@@ -57,4 +57,6 @@ jobs:
         git pull
         export TGBOTAPI=${{ secrets.TGBOTAPI }}
         export ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+        export POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+        export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
         make upd
